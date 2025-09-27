@@ -3,83 +3,96 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-  <title>EberwineRP — Conectando…</title>
+  <title>EberwineRP — Conectando… (Ribbon)</title>
   <style>
     :root{
-      --bg1:#0b1020; --bg2:#1a0f2e;
-      --accent1:#7c3aed; --accent2:#06b6d4;
+      --bg1:#0b1020; --bg2:#131a33; /* fondo oscuro mágico */
       --fg:#f8fafc; --muted:#cbd5e1;
+      --accent1:#1fb6ff; /* azul */
+      --accent2:#60a5fa; /* azul suave */
+      --gold:#d4af37;    /* dorado */
+      --white:#ffffff;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
+
+    /* Fondo con degradados sutiles y posible imagen */
     body{
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      margin:0; 
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Arial;
+      display:flex; justify-content:center; align-items:center;
+      margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Arial;
       color:var(--fg);
-      background: 
-        url('./assets/bg.jpg') center/cover no-repeat fixed,
-        radial-gradient(1200px 600px at 20% 20%, rgba(124,58,237,.25), transparent 60%),
-        radial-gradient(1200px 600px at 80% 80%, rgba(6,182,212,.20), transparent 60%),
+      background:
+        radial-gradient(1200px 600px at 20% 20%, rgba(31,182,255,.18), transparent 60%),
+        radial-gradient(1200px 600px at 80% 80%, rgba(212,175,55,.12), transparent 60%),
         linear-gradient(180deg, var(--bg2), var(--bg1));
       overflow:hidden;
     }
 
-    /* Caja principal */
+    /* Canvas partículas */
+    #magicCursor { position:fixed; inset:0; pointer-events:none; z-index:1; filter: blur(.2px); }
+
+    /* Contenedor principal */
     .wrap{
-      position:relative; 
-      z-index:2;
+      position:relative; z-index:2;
       width:min(1200px, 95vw);
-      background: rgba(9, 14, 28, .55);
-      border: 1px solid rgba(255,255,255,.08);
-      border-radius: 20px; 
-      padding: 40px 32px;
+      background: rgba(10,14,28,.55);
+      border-radius: 22px;
+      padding: 44px 36px;
       backdrop-filter: blur(8px);
-      box-shadow: 0 18px 50px rgba(0,0,0,.45), inset 0 0 40px rgba(124,58,237,.08);
+      box-shadow: 0 18px 60px rgba(0,0,0,.45), inset 0 0 40px rgba(97,218,251,.06);
     }
+
+    /* Marco tipo lazo/ribbon 2.5D alrededor de la UI (limpio, sin adornos) */
+    .wrap::before{
+      content:""; position:absolute; inset:0; border-radius:22px; pointer-events:none;
+      /* Cinta: trazo con brillo (gradiente) */
+      padding:2px; /* grosor del contorno */
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.75), rgba(255,255,255,.15) 18%, rgba(31,182,255,.7) 36%, rgba(96,165,250,.8) 48%, rgba(212,175,55,.85) 70%, rgba(255,255,255,.65) 100%);
+      -webkit-mask:
+        linear-gradient(#000 0 0) content-box,
+        linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor; mask-composite: exclude;
+      box-shadow: 0 0 20px rgba(31,182,255,.35), 0 0 28px rgba(212,175,55,.25);
+    }
+    /* Sombra caída sutil del lazo para sensación 3D */
+    .wrap::after{
+      content:""; position:absolute; inset:8px; border-radius:20px; pointer-events:none;
+      box-shadow: 0 12px 28px rgba(0,0,0,.35) inset, 0 -8px 18px rgba(0,0,0,.25) inset;
+    }
+
     .top{ display:flex; align-items:center; gap:16px }
-    .logo{ width:64px; height:64px; border-radius:16px; object-fit:cover;
-           border:1px solid rgba(255,255,255,.12);
-           box-shadow: 0 6px 18px rgba(124,58,237,.35), 0 0 0 6px rgba(124,58,237,.10); }
-    .title{ margin:0; font-weight:900; font-size:2.5rem; letter-spacing:.3px }
+    .logo{ width:68px; height:68px; border-radius:16px; object-fit:cover;
+           border:1px solid rgba(255,255,255,.18);
+           box-shadow: 0 6px 18px rgba(31,182,255,.35), 0 0 0 6px rgba(31,182,255,.10); }
+    .title{ margin:0; font-weight:900; font-size:2.6rem; letter-spacing:.3px }
     .subtitle{ margin:.25rem 0 0; color:var(--muted) }
+
     .grid{ display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:14px; margin-top:18px }
-    .card{ background: rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.06);
+    .card{ background: rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08);
            border-radius:14px; padding:12px 14px; min-height:68px }
     .label{ font-size:12px; text-transform:uppercase; letter-spacing:.12em; color:#9aa6b2 }
-    .value{ margin-top:6px; font-weight:600; font-size:1.2rem; text-shadow: 0 2px 14px rgba(124,58,237,.25) }
+    .value{ margin-top:6px; font-weight:600; font-size:1.2rem; text-shadow: 0 2px 14px rgba(31,182,255,.25) }
+
     .bar{ margin-top:18px; height:14px; border-radius:999px; background:rgba(255,255,255,.08);
           overflow:hidden; border:1px solid rgba(255,255,255,.07) }
     .bar > div{ height:100%; width:0%;
-      background: linear-gradient(90deg, var(--accent1), var(--accent2));
-      box-shadow: 0 0 20px rgba(124,58,237,.5);
+      background: linear-gradient(90deg, var(--accent1), var(--gold));
+      box-shadow: 0 0 20px rgba(31,182,255,.5);
       transition: width .35s ease;
     }
+
     .foot{ display:flex; justify-content:space-between; align-items:center; margin-top:14px; gap:10px }
     .small{ font-size:12px; color:#9aa6b2 }
     .tips{ font-size:13px; color:#e2e8f0 }
-    .spin{ display:inline-block; width:14px; height:14px; border-radius:50%;
-           border:2px solid rgba(255,255,255,.35); border-top-color:#fff;
-           animation:spin 1s linear infinite; vertical-align:-2px; margin-right:6px }
-    @keyframes spin{ to{ transform: rotate(360deg); } }
-    details{ margin-top:14px }
-    summary{ cursor:pointer }
-    .link{ color:#a78bfa; text-decoration:none; border-bottom:1px dashed rgba(167,139,250,.6); }
+    .link{ color:#a5f3fc; text-decoration:none; border-bottom:1px dashed rgba(165,243,252,.6); }
     .link:hover{ opacity:.85 }
 
-    /* Canvas para las chispas */
-    #magicCursor {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 1; /* detrás de la UI */
-    }
+    details{ margin-top:16px }
+    summary{ cursor:pointer }
   </style>
 </head>
 <body>
-  <!-- Canvas para partículas -->
   <canvas id="magicCursor"></canvas>
 
   <div class="wrap" role="main" aria-label="Pantalla de carga EberwineRP">
@@ -91,22 +104,34 @@
       </div>
     </div>
 
+    <!-- Contenido ejemplo (puedes ajustar a tu gusto) -->
+    <details>
+      <summary class="small">Normas rápidas</summary>
+      <ol class="small" style="margin:.5rem 0 .25rem 1.25rem">
+        <li>Rolea consecuencias de tus actos.</li>
+        <li>No abuses de bugs; repórtalos al staff.</li>
+        <li>OOC en /ooc; nunca te salgas rol.</li>
+        <li>Rolea lesiones y evita powergaming.</li>
+        <li>Evita metagaming; cuidado con los /pm.</li>
+      </ol>
+    </details>
+
     <div class="grid">
       <div class="card">
         <div class="label">Jugador</div>
         <div class="value" id="playerId">SteamID64: —</div>
       </div>
       <div class="card">
-        <div class="label">Evento activo</div>
-        <div class="value">El Torneo de Invierno</div>
+        <div class="label">Época</div>
+        <div class="value">Actualidad</div>
       </div>
       <div class="card">
-        <div class="label">Casa ganadora</div>
-        <div class="value" id="casaGanadora">—</div>
+        <div class="label">Trama actual</div>
+        <div class="value">Bienvenidos a Hogwarts</div>
       </div>
       <div class="card">
-        <div class="label">Discord</div>
-        <div class="value"><a class="link" href="https://discord.gg/tuCodigo" target="_blank">Únete</a></div>
+        <div class="label">Copa Ganada</div>
+        <div class="value">—</div>
       </div>
     </div>
 
@@ -114,109 +139,86 @@
 
     <div class="foot">
       <div class="tips">
-        <span class="spin"></span><span id="tip">Consejo: respeta el rol y evita metagaming.</span>
+        <span id="tip">Consejo: consulta /reglas para más detalle.</span>
       </div>
       <div class="small" id="hostname">eberwinerp.com</div>
     </div>
 
-    <details>
-      <summary class="small">Normas rápidas</summary>
-      <ol class="small" style="margin:.5rem 0 .25rem 1.25rem">
-        <li>Rolea consecuencias de tus actos.</li>
-        <li>No abuses de bugs; repórtalos al staff.</li>
-        <li>OOC en /ooc; voz para rol.</li>
-      </ol>
-    </details>
-
-    <p class="small" style="opacity:.7;margin-top:10px">
+    <p class="small" style="opacity:.75;margin-top:10px">
       ¿Problemas de conexión? Revisa tu caché de Workshop o visita nuestro 
       <a class="link" href="https://discord.gg/tuCodigo" target="_blank">Discord</a>.
     </p>
   </div>
 
   <script>
-    // Datos desde la URL (%s y %m)
+    // Utilidades y datos de URL
     const $ = id => document.getElementById(id);
     const qs = new URLSearchParams(location.search);
     if (qs.get('steamid')) $('playerId').textContent = 'SteamID64: ' + qs.get('steamid');
 
     // Progreso visual
     const bar = $('progress'); let p = 0;
-    function tick(){
-      p = Math.min(100, p + (Math.random()*8 + 2));
-      bar.style.width = p + '%';
-      if (p < 96) setTimeout(tick, 420);
-    }
-    tick();
+    (function tick(){ p = Math.min(100, p + (Math.random()*8 + 2)); bar.style.width = p + '%'; if (p < 96) setTimeout(tick, 420); })();
 
-    // Consejos rotativos
+    // Tips rotativos
     const tips = [
       'Consejo: usa /report para contactar con el staff.',
-      'Consejo: /reglas para ver normas del servidor.',
       'Consejo: rolea lesiones y evita powergaming.',
-      'Consejo: haz /discord para unirte a la comunidad.'
+      'Consejo: respeta el rol y evita metagaming.',
+      'Consejo: /discord para unirte a la comunidad.'
     ];
-    setInterval(()=>{
-      $('tip').textContent = tips[Math.floor(Math.random()*tips.length)];
-    }, 4000);
+    setInterval(()=>{ $('tip').textContent = tips[Math.floor(Math.random()*tips.length)]; }, 4000);
 
-    // === CHISPAS MÁGICAS QUE SIGUEN EL CURSOR ===
-    const canvas = document.getElementById("magicCursor");
-    const ctx = canvas.getContext("2d");
+    // === Partículas: chispas del cursor (azul/dorado/blanco) + estrellas suaves aleatorias ===
+    const canvas = document.getElementById('magicCursor');
+    const ctx = canvas.getContext('2d');
+    let W, H; function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+    window.addEventListener('resize', resize); resize();
 
-    let W = window.innerWidth;
-    let H = window.innerHeight;
-    canvas.width = W;
-    canvas.height = H;
+    const palette = [
+      {h:210, s:'100%', l:'70%'}, // azul
+      {h:45,  s:'100%', l:'60%'}, // dorado
+      {h:0,   s:'0%',   l:'100%'} // blanco
+    ];
 
-    window.addEventListener("resize", () => {
-      W = window.innerWidth;
-      H = window.innerHeight;
-      canvas.width = W;
-      canvas.height = H;
-    });
+    let particles = [], stars = [];
 
-    let particles = [];
-
-    window.addEventListener("mousemove", e => {
-      const colors = [
-        {h:210, s:"100%", l:"70%"}, // azul
-        {h:45,  s:"100%", l:"60%"}, // dorado
-        {h:0,   s:"0%",   l:"100%"} // blanco
-      ];
-      for (let i = 0; i < 5; i++) {
-        const c = colors[Math.floor(Math.random()*colors.length)];
-        particles.push({
-          x: e.clientX,
-          y: e.clientY,
-          vx: (Math.random() - 0.5) * 2,
-          vy: (Math.random() - 0.5) * 2,
-          life: 1,
-          r: Math.random() * 4 + 2,
-          color: c
-        });
+    // cursor sparks
+    window.addEventListener('mousemove', e => {
+      for (let i=0;i<5;i++){
+        const c = palette[Math.floor(Math.random()*palette.length)];
+        particles.push({ x:e.clientX, y:e.clientY, vx:(Math.random()-0.5)*2, vy:(Math.random()-0.5)*2, life:1, r:Math.random()*4+2, color:c });
       }
     });
 
-    function animate() {
-      ctx.clearRect(0,0,W,H);
-      particles.forEach((p,i) => {
-        p.x += p.vx;
-        p.y += p.vy;
-        p.life -= 0.02;
-        if (p.life <= 0) { particles.splice(i,1); return; }
+    // random soft stars
+    function spawnStar(){
+      const c = palette[Math.floor(Math.random()*palette.length)];
+      stars.push({ x:Math.random()*W, y:Math.random()*H, life:1, r:Math.random()*1.5+1.2, color:c, rot:Math.random()*Math.PI, vr:(Math.random()-0.5)*0.01 });
+      setTimeout(spawnStar, 900 + Math.random()*900);
+    } spawnStar();
 
-        const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r*4);
-        grad.addColorStop(0, `hsla(${p.color.h}, ${p.color.s}, ${p.color.l}, ${p.life})`);
-        grad.addColorStop(1, `transparent`);
-        ctx.fillStyle = grad;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r*4, 0, Math.PI*2);
-        ctx.fill();
-      });
-      requestAnimationFrame(animate);
+    function glow(x,y,r,color,a){
+      const grad = ctx.createRadialGradient(x,y,0, x,y,r*4);
+      grad.addColorStop(0, `hsla(${color.h}, ${color.s}, ${color.l}, ${0.85*a})`);
+      grad.addColorStop(1, `rgba(255,255,255,0)`);
+      ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(x,y,r*4,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.fillStyle = `hsla(${color.h}, ${color.s}, ${color.l}, ${a})`; ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
     }
-    animate();
+    function star(x,y,r,rot,color,a){
+      ctx.save(); ctx.translate(x,y); ctx.rotate(rot); ctx.globalAlpha = a;
+      ctx.strokeStyle = `hsla(${color.h}, ${color.s}, ${color.l}, 0.9)`; ctx.lineWidth = 1.1;
+      ctx.beginPath(); ctx.moveTo(-r*4,0); ctx.lineTo(r*4,0); ctx.moveTo(0,-r*4); ctx.lineTo(0,r*4); ctx.stroke();
+      const grad = ctx.createRadialGradient(0,0,0, 0,0,r*6); grad.addColorStop(0, `hsla(${color.h}, ${color.s}, ${color.l}, 0.6)`); grad.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(0,0,r*6,0,Math.PI*2); ctx.fill(); ctx.restore();
+    }
+
+    function loop(){
+      ctx.clearRect(0,0,W,H);
+      for (let i=particles.length-1;i>=0;i--){ const p=particles[i]; p.x+=p.vx; p.y+=p.vy; p.life-=0.02; if(p.life<=0){ particles.splice(i,1); continue; } glow(p.x,p.y,p.r,p.color,p.life); }
+      for (let i=stars.length-1;i>=0;i--){ const s=stars[i]; s.rot+=s.vr; s.life-=0.006; if(s.life<=0){ stars.splice(i,1); continue; } star(s.x,s.y,s.r,s.rot,s.color,s.life*.9); }
+      requestAnimationFrame(loop);
+    } loop();
   </script>
 </body>
 </html>
