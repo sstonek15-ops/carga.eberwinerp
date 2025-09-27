@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-  <title>EberwineRP — Conectando… (Ribbon)</title>
+  <title>EberwineRP — Conectando… (Ribbon + Varita)</title>
   <style>
     :root{
       --bg1:#0b1020; --bg2:#131a33; /* fondo oscuro mágico */
@@ -27,10 +27,17 @@
         radial-gradient(1200px 600px at 80% 80%, rgba(212,175,55,.12), transparent 60%),
         linear-gradient(180deg, var(--bg2), var(--bg1));
       overflow:hidden;
+      min-height:100vh; /* centrado robusto */
+      cursor:none; /* ocultar cursor para usar la varita */
     }
 
     /* Canvas partículas */
     #magicCursor { position:fixed; inset:0; pointer-events:none; z-index:1; filter: blur(.2px); }
+
+    /* Varita negra con tramo blanco */
+    #wand{ position:fixed; left:0; top:0; width:72px; height:72px; pointer-events:none; z-index:3;
+      transform:translate(-6px,-38px) rotate(-35deg); filter: drop-shadow(0 0 10px rgba(255,255,255,.25)); }
+    #wand svg{ width:100%; height:100%; display:block }
 
     /* Contenedor principal */
     .wrap{
@@ -43,10 +50,9 @@
       box-shadow: 0 18px 60px rgba(0,0,0,.45), inset 0 0 40px rgba(97,218,251,.06);
     }
 
-    /* Marco tipo lazo/ribbon 2.5D alrededor de la UI (limpio, sin adornos) */
+    /* Marco tipo lazo/ribbon 2.5D alrededor de la UI */
     .wrap::before{
       content:""; position:absolute; inset:0; border-radius:22px; pointer-events:none;
-      /* Cinta: trazo con brillo (gradiente) */
       padding:2px; /* grosor del contorno */
       background:
         linear-gradient(135deg, rgba(255,255,255,.75), rgba(255,255,255,.15) 18%, rgba(31,182,255,.7) 36%, rgba(96,165,250,.8) 48%, rgba(212,175,55,.85) 70%, rgba(255,255,255,.65) 100%);
@@ -56,7 +62,6 @@
       -webkit-mask-composite: xor; mask-composite: exclude;
       box-shadow: 0 0 20px rgba(31,182,255,.35), 0 0 28px rgba(212,175,55,.25);
     }
-    /* Sombra caída sutil del lazo para sensación 3D */
     .wrap::after{
       content:""; position:absolute; inset:8px; border-radius:20px; pointer-events:none;
       box-shadow: 0 12px 28px rgba(0,0,0,.35) inset, 0 -8px 18px rgba(0,0,0,.25) inset;
@@ -94,8 +99,40 @@
   </style>
 </head>
 <body>
+  <!-- Canvas para chispas y estrellas -->
   <canvas id="magicCursor"></canvas>
 
+  <!-- Varita negra con tramo blanco y punta blanca -->
+  <div id="wand" aria-hidden="true">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+      <!-- Punta blanca -->
+      <circle cx="18" cy="10" r="5" fill="#ffffff" />
+      <defs>
+        <radialGradient id="glowW" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#ffffff" stop-opacity=".9"/>
+          <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+        </radialGradient>
+        <!-- Mango negro -->
+        <linearGradient id="blackHandle" x1="0" x2="1">
+          <stop offset="0%" stop-color="#0b0b0b"/>
+          <stop offset="100%" stop-color="#2a2a2a"/>
+        </linearGradient>
+      </defs>
+      <!-- Halo de la punta -->
+      <circle cx="18" cy="10" r="10" fill="url(#glowW)"/>
+      <!-- Tramo intermedio blanco (entre mango y punta) -->
+      <rect x="16" y="12" width="6" height="16" rx="3" fill="#ffffff"/>
+      <!-- Mango negro -->
+      <rect x="16" y="28" width="6" height="30" rx="3" fill="url(#blackHandle)"/>
+      <!-- Cruces finas en la punta -->
+      <g stroke="#ffffff" stroke-width="1" opacity=".9">
+        <line x1="18" y1="-2" x2="18" y2="22"/>
+        <line x1="6"  y1="10" x2="30" y2="10"/>
+      </g>
+    </svg>
+  </div>
+
+  <!-- UI principal -->
   <div class="wrap" role="main" aria-label="Pantalla de carga EberwineRP">
     <div class="top">
       <img class="logo" src="./assets/logo.png" alt="Logo EberwineRP">
@@ -105,7 +142,6 @@
       </div>
     </div>
 
-    <!-- Contenido ejemplo (puedes ajustar a tu gusto) -->
     <details>
       <summary class="small">Normas rápidas</summary>
       <ol class="small" style="margin:.5rem 0 .25rem 1.25rem">
@@ -120,7 +156,7 @@
     <div class="grid">
       <div class="card">
         <div class="label">Jugador</div>
-        <div class="value" id="playerId">SteamID64: —</div>
+        <div class="value" id="playerId">SteamID64: </div>
       </div>
       <div class="card">
         <div class="label">Época</div>
@@ -147,7 +183,7 @@
 
     <p class="small" style="opacity:.75;margin-top:10px">
       ¿Problemas de conexión? Revisa tu caché de Workshop o visita nuestro 
-      <a class="link" href="https://discord.gg/tuCodigo" target="_blank">Discord</a>.
+      <a class="link" href="https://eberwinerp.com/" target="_blank" rel="noopener">Discord</a>.
     </p>
   </div>
 
@@ -157,11 +193,11 @@
     const qs = new URLSearchParams(location.search);
     if (qs.get('steamid')) $('playerId').textContent = 'SteamID64: ' + qs.get('steamid');
 
-    // Progreso visual
+    // Progreso visual demo
     const bar = $('progress'); let p = 0;
     (function tick(){ p = Math.min(100, p + (Math.random()*8 + 2)); bar.style.width = p + '%'; if (p < 96) setTimeout(tick, 420); })();
 
-    // Tips rotativos
+    // Tips rotativos demo
     const tips = [
       'Consejo: usa /report para contactar con el staff.',
       'Consejo: rolea lesiones y evita powergaming.',
@@ -170,7 +206,7 @@
     ];
     setInterval(()=>{ $('tip').textContent = tips[Math.floor(Math.random()*tips.length)]; }, 4000);
 
-    // === Partículas: chispas del cursor (azul/dorado/blanco) + estrellas suaves aleatorias ===
+    // === Partículas: chispas del cursor (azul/dorado/blanco) + estrellas suaves ===
     const canvas = document.getElementById('magicCursor');
     const ctx = canvas.getContext('2d');
     let W, H; function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
@@ -182,41 +218,53 @@
       {h:0,   s:'0%',   l:'100%'} // blanco
     ];
 
-    let particles = [], stars = [];
+    let particles = [], stars = [], mouse = {x:innerWidth/2, y:innerHeight/2};
+    const wand = document.getElementById('wand');
 
-    // cursor sparks
+    // Offsets para alinear la punta con el ratón (coinciden con transform de #wand)
+    const TIP_OFFSET_X = 8;
+    const TIP_OFFSET_Y = -28;
+
+    // Seguir ratón y emitir chispas desde la punta
     window.addEventListener('mousemove', e => {
-      for (let i=0;i<5;i++){
+      mouse.x = e.clientX; mouse.y = e.clientY;
+      wand.style.transform = `translate(${e.clientX-6}px, ${e.clientY-38}px) rotate(-35deg)`;
+      for (let i=0;i<4;i++){
         const c = palette[Math.floor(Math.random()*palette.length)];
-        particles.push({ x:e.clientX, y:e.clientY, vx:(Math.random()-0.5)*2, vy:(Math.random()-0.5)*2, life:1, r:Math.random()*4+2, color:c });
+        particles.push({ x:e.clientX+TIP_OFFSET_X, y:e.clientY+TIP_OFFSET_Y, vx:(Math.random()-0.5)*1.6, vy:(Math.random()-0.5)*1.6, life:1, r:Math.random()*1.6+0.5, color:c });
       }
     });
 
-    // random soft stars
+    // Estrellas suaves aleatorias
     function spawnStar(){
       const c = palette[Math.floor(Math.random()*palette.length)];
-      stars.push({ x:Math.random()*W, y:Math.random()*H, life:1, r:Math.random()*1.5+1.2, color:c, rot:Math.random()*Math.PI, vr:(Math.random()-0.5)*0.01 });
+      stars.push({ x:Math.random()*W, y:Math.random()*H, life:1, r:Math.random()*1.2+0.6, color:c, rot:Math.random()*Math.PI, vr:(Math.random()-0.5)*0.01 });
       setTimeout(spawnStar, 900 + Math.random()*900);
     } spawnStar();
 
     function glow(x,y,r,color,a){
-      const grad = ctx.createRadialGradient(x,y,0, x,y,r*4);
+      const grad = ctx.createRadialGradient(x,y,0, x,y,r*3.5);
       grad.addColorStop(0, `hsla(${color.h}, ${color.s}, ${color.l}, ${0.85*a})`);
       grad.addColorStop(1, `rgba(255,255,255,0)`);
-      ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(x,y,r*4,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(x,y,r*3.5,0,Math.PI*2); ctx.fill();
       ctx.beginPath(); ctx.fillStyle = `hsla(${color.h}, ${color.s}, ${color.l}, ${a})`; ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
     }
     function star(x,y,r,rot,color,a){
       ctx.save(); ctx.translate(x,y); ctx.rotate(rot); ctx.globalAlpha = a;
-      ctx.strokeStyle = `hsla(${color.h}, ${color.s}, ${color.l}, 0.9)`; ctx.lineWidth = 1.1;
-      ctx.beginPath(); ctx.moveTo(-r*4,0); ctx.lineTo(r*4,0); ctx.moveTo(0,-r*4); ctx.lineTo(0,r*4); ctx.stroke();
-      const grad = ctx.createRadialGradient(0,0,0, 0,0,r*6); grad.addColorStop(0, `hsla(${color.h}, ${color.s}, ${color.l}, 0.6)`); grad.addColorStop(1, 'rgba(255,255,255,0)');
-      ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(0,0,r*6,0,Math.PI*2); ctx.fill(); ctx.restore();
+      ctx.strokeStyle = `hsla(${color.h}, ${color.s}, ${color.l}, 0.9)`; ctx.lineWidth = 1.0;
+      ctx.beginPath(); ctx.moveTo(-r*3,0); ctx.lineTo(r*3,0); ctx.moveTo(0,-r*3); ctx.lineTo(0,r*3); ctx.stroke();
+      const grad = ctx.createRadialGradient(0,0,0, 0,0,r*5); grad.addColorStop(0, `hsla(${color.h}, ${color.s}, ${color.l}, 0.55)`); grad.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(0,0,r*5,0,Math.PI*2); ctx.fill(); ctx.restore();
     }
 
     function loop(){
       ctx.clearRect(0,0,W,H);
-      for (let i=particles.length-1;i>=0;i--){ const p=particles[i]; p.x+=p.vx; p.y+=p.vy; p.life-=0.02; if(p.life<=0){ particles.splice(i,1); continue; } glow(p.x,p.y,p.r,p.color,p.life); }
+      // Halo en la punta
+      const tipX = mouse.x + TIP_OFFSET_X, tipY = mouse.y + TIP_OFFSET_Y;
+      glow(tipX, tipY, 2.2, {h:45,s:'100%',l:'70%'}, .9);
+      // Partículas
+      for (let i=particles.length-1;i>=0;i--){ const p=particles[i]; p.x+=p.vx; p.y+=p.vy; p.life-=0.03; if(p.life<=0){ particles.splice(i,1); continue; } glow(p.x,p.y,p.r,p.color,p.life); }
+      // Estrellas
       for (let i=stars.length-1;i>=0;i--){ const s=stars[i]; s.rot+=s.vr; s.life-=0.006; if(s.life<=0){ stars.splice(i,1); continue; } star(s.x,s.y,s.r,s.rot,s.color,s.life*.9); }
       requestAnimationFrame(loop);
     } loop();
