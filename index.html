@@ -1,4 +1,93 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+  <title>EberwineRP — Conectando… (Destellos globales)</title>
+  <style>
+    :root{
+      --bg1:#0b1020; --bg2:#131a33; /* fondo oscuro mágico */
+      --fg:#f8fafc; --muted:#cbd5e1; --gold:#d4af37; --accent1:#1fb6ff; --accent2:#60a5fa;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
 
+    body{
+      display:flex; justify-content:center; align-items:center; margin:0; color:var(--fg);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Arial;
+      background:
+        url('./assets/bg.jpg') center/cover no-repeat fixed,
+        radial-gradient(1200px 600px at 20% 20%, rgba(31,182,255,.18), transparent 60%),
+        radial-gradient(1200px 600px at 80% 80%, rgba(212,175,55,.12), transparent 60%),
+        linear-gradient(180deg, var(--bg2), var(--bg1));
+      overflow:hidden; min-height:100vh;
+      /* mantenemos cursor normal al omitir varita */
+      cursor:auto;
+    }
+
+    /* Canvas de destellos de fondo */
+    #magicBG{ position:fixed; inset:0; pointer-events:none; z-index:1; filter:blur(.15px) }
+
+    /* UI principal */
+    .wrap{
+      position:relative; z-index:2; width:min(1200px,95vw);
+      background: rgba(10,14,28,.55);
+      border-radius: 22px; padding: 44px 36px; backdrop-filter: blur(8px);
+      box-shadow: 0 18px 60px rgba(0,0,0,.45), inset 0 0 40px rgba(97,218,251,.06);
+    }
+    .wrap::before{ content:""; position:absolute; inset:0; border-radius:22px; pointer-events:none; padding:2px;
+      background: linear-gradient(135deg, rgba(255,255,255,.75), rgba(255,255,255,.15) 18%, rgba(31,182,255,.7) 36%, rgba(96,165,250,.8) 48%, rgba(212,175,55,.85) 70%, rgba(255,255,255,.65) 100%);
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite:xor; mask-composite:exclude; box-shadow: 0 0 20px rgba(31,182,255,.35), 0 0 28px rgba(212,175,55,.25);
+    }
+    .wrap::after{ content:""; position:absolute; inset:8px; border-radius:20px; pointer-events:none; box-shadow: 0 12px 28px rgba(0,0,0,.35) inset, 0 -8px 18px rgba(0,0,0,.25) inset }
+
+    .top{ display:flex; align-items:center; gap:16px }
+    .logo{ width:68px; height:68px; border-radius:16px; object-fit:cover; border:1px solid rgba(255,255,255,.18); box-shadow: 0 6px 18px rgba(31,182,255,.35), 0 0 0 6px rgba(31,182,255,.10) }
+    .title{ margin:0; font-weight:900; font-size:2.6rem; letter-spacing:.3px }
+    .subtitle{ margin:.25rem 0 0; color:var(--muted) }
+
+    .grid{ display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:14px; margin-top:18px }
+    .card{ background: rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08); border-radius:14px; padding:12px 14px; min-height:68px }
+    .label{ font-size:12px; text-transform:uppercase; letter-spacing:.12em; color:#9aa6b2 }
+    .value{ margin-top:6px; font-weight:600; font-size:1.2rem; text-shadow: 0 2px 14px rgba(31,182,255,.25) }
+
+    .bar{ margin-top:18px; height:14px; border-radius:999px; background:rgba(255,255,255,.08); overflow:hidden; border:1px solid rgba(255,255,255,.07) }
+    .bar>div{ height:100%; width:0%; background:linear-gradient(90deg, var(--accent1), var(--gold)); box-shadow:0 0 20px rgba(31,182,255,.5); transition:width .35s ease }
+
+    .foot{ display:flex; justify-content:space-between; align-items:center; margin-top:14px; gap:10px }
+    .small{ font-size:12px; color:#9aa6b2 }
+    .tips{ font-size:13px; color:#e2e8f0 }
+    .link{ color:#a5f3fc; text-decoration:none; border-bottom:1px dashed rgba(165,243,252,.6); }
+    .link:hover{ opacity:.85 }
+
+    details{ margin-top:16px }
+    summary{ cursor:pointer }
+  </style>
+</head>
+<body>
+  <!-- Canvas de destellos globales -->
+  <canvas id="magicBG"></canvas>
+
+  <!-- UI principal -->
+  <div class="wrap" role="main" aria-label="Pantalla de carga EberwineRP">
+    <div class="top">
+      <img class="logo" src="./assets/logo.png" alt="Logo EberwineRP">
+      <div>
+        <h1 class="title" id="serverName">EberwineRP</h1>
+        <p class="subtitle small" id="serverSubtitle">Tejiendo hechizos y cargando recursos…</p>
+      </div>
+    </div>
+
+    <!-- Normas rápidas desplegadas -->
+    <details open>
+      <summary class="small">Normas rápidas</summary>
+      <ol class="small" style="margin:.5rem 0 .25rem 1.25rem">
+        <li>Rolea consecuencias de tus actos.</li>
+        <li>No abuses de bugs; repórtalos al staff.</li>
+        <li>OOC en /ooc; nunca te salgas rol.</li>
+        <li>Rolea lesiones y evita powergaming.</li>
+        <li>Evita metagaming; cuidado con los /pm.</li>
       </ol>
     </details>
 
