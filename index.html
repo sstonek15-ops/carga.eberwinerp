@@ -1,203 +1,34 @@
-<!doctype html>
-<html lang="es">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-  <title>EberwineRP — Conectando… (Ribbon + Varita)</title>
-  <style>
-    :root{
-      --bg1:#0b1020; --bg2:#131a33; /* fondo oscuro mágico */
-      --fg:#f8fafc; --muted:#cbd5e1;
-      --accent1:#1fb6ff; /* azul */
-      --accent2:#60a5fa; /* azul suave */
-      --gold:#d4af37;    /* dorado */
-      --white:#ffffff;
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
 
-    /* Fondo con degradados sutiles y posible imagen */
-    body{
-      display:flex; justify-content:center; align-items:center;
-      margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Arial;
-      color:var(--fg);
-      background:
-        url('./assets/bg.jpg') center/cover no-repeat fixed,
-        radial-gradient(1200px 600px at 20% 20%, rgba(31,182,255,.18), transparent 60%),
-        radial-gradient(1200px 600px at 80% 80%, rgba(212,175,55,.12), transparent 60%),
-        linear-gradient(180deg, var(--bg2), var(--bg1));
-      overflow:hidden;
-      min-height:100vh; /* centrado robusto */
-      cursor:none; /* ocultar cursor para usar la varita */
-    }
-
-    /* Canvas partículas */
-    #magicCursor { position:fixed; inset:0; pointer-events:none; z-index:1; filter: blur(.2px); }
-
-    /* Varita negra con tramo blanco */
-    #wand{ position:fixed; left:0; top:0; width:72px; height:72px; pointer-events:none; z-index:3;
-      transform:translate(-6px,-38px) rotate(-35deg); filter: drop-shadow(0 0 10px rgba(255,255,255,.25)); }
-    #wand svg{ width:100%; height:100%; display:block }
-
-    /* Contenedor principal */
-    .wrap{
-      position:relative; z-index:2;
-      width:min(1200px, 95vw);
-      background: rgba(10,14,28,.55);
-      border-radius: 22px;
-      padding: 44px 36px;
-      backdrop-filter: blur(8px);
-      box-shadow: 0 18px 60px rgba(0,0,0,.45), inset 0 0 40px rgba(97,218,251,.06);
-    }
-
-    /* Marco tipo lazo/ribbon 2.5D alrededor de la UI */
-    .wrap::before{
-      content:""; position:absolute; inset:0; border-radius:22px; pointer-events:none;
-      padding:2px; /* grosor del contorno */
-      background:
-        linear-gradient(135deg, rgba(255,255,255,.75), rgba(255,255,255,.15) 18%, rgba(31,182,255,.7) 36%, rgba(96,165,250,.8) 48%, rgba(212,175,55,.85) 70%, rgba(255,255,255,.65) 100%);
-      -webkit-mask:
-        linear-gradient(#000 0 0) content-box,
-        linear-gradient(#000 0 0);
-      -webkit-mask-composite: xor; mask-composite: exclude;
-      box-shadow: 0 0 20px rgba(31,182,255,.35), 0 0 28px rgba(212,175,55,.25);
-    }
-    .wrap::after{
-      content:""; position:absolute; inset:8px; border-radius:20px; pointer-events:none;
-      box-shadow: 0 12px 28px rgba(0,0,0,.35) inset, 0 -8px 18px rgba(0,0,0,.25) inset;
-    }
-
-    .top{ display:flex; align-items:center; gap:16px }
-    .logo{ width:68px; height:68px; border-radius:16px; object-fit:cover;
-           border:1px solid rgba(255,255,255,.18);
-           box-shadow: 0 6px 18px rgba(31,182,255,.35), 0 0 0 6px rgba(31,182,255,.10); }
-    .title{ margin:0; font-weight:900; font-size:2.6rem; letter-spacing:.3px }
-    .subtitle{ margin:.25rem 0 0; color:var(--muted) }
-
-    .grid{ display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:14px; margin-top:18px }
-    .card{ background: rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08);
-           border-radius:14px; padding:12px 14px; min-height:68px }
-    .label{ font-size:12px; text-transform:uppercase; letter-spacing:.12em; color:#9aa6b2 }
-    .value{ margin-top:6px; font-weight:600; font-size:1.2rem; text-shadow: 0 2px 14px rgba(31,182,255,.25) }
-
-    .bar{ margin-top:18px; height:14px; border-radius:999px; background:rgba(255,255,255,.08);
-          overflow:hidden; border:1px solid rgba(255,255,255,.07) }
-    .bar > div{ height:100%; width:0%;
-      background: linear-gradient(90deg, var(--accent1), var(--gold));
-      box-shadow: 0 0 20px rgba(31,182,255,.5);
-      transition: width .35s ease;
-    }
-
-    .foot{ display:flex; justify-content:space-between; align-items:center; margin-top:14px; gap:10px }
-    .small{ font-size:12px; color:#9aa6b2 }
-    .tips{ font-size:13px; color:#e2e8f0 }
-    .link{ color:#a5f3fc; text-decoration:none; border-bottom:1px dashed rgba(165,243,252,.6); }
-    .link:hover{ opacity:.85 }
-
-    details{ margin-top:16px }
-    summary{ cursor:pointer }
-  </style>
-</head>
-<body>
-  <!-- Canvas para chispas y estrellas -->
-  <canvas id="magicCursor"></canvas>
-
-  <!-- Varita negra con tramo blanco y punta blanca -->
-  <div id="wand" aria-hidden="true">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-      <!-- Punta blanca -->
-      <circle cx="18" cy="10" r="5" fill="#ffffff" />
-      <defs>
-        <radialGradient id="glowW" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stop-color="#ffffff" stop-opacity=".9"/>
-          <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
-        </radialGradient>
-        <!-- Mango negro -->
-        <linearGradient id="blackHandle" x1="0" x2="1">
-          <stop offset="0%" stop-color="#0b0b0b"/>
-          <stop offset="100%" stop-color="#2a2a2a"/>
-        </linearGradient>
-      </defs>
-      <!-- Halo de la punta -->
-      <circle cx="18" cy="10" r="10" fill="url(#glowW)"/>
-      <!-- Tramo intermedio blanco (entre mango y punta) -->
-      <rect x="16" y="12" width="6" height="16" rx="3" fill="#ffffff"/>
-      <!-- Mango negro -->
-      <rect x="16" y="28" width="6" height="30" rx="3" fill="url(#blackHandle)"/>
-      <!-- Cruces finas en la punta -->
-      <g stroke="#ffffff" stroke-width="1" opacity=".9">
-        <line x1="18" y1="-2" x2="18" y2="22"/>
-        <line x1="6"  y1="10" x2="30" y2="10"/>
-      </g>
-    </svg>
-  </div>
-
-  <!-- UI principal -->
-  <div class="wrap" role="main" aria-label="Pantalla de carga EberwineRP">
-    <div class="top">
-      <img class="logo" src="./assets/logo.png" alt="Logo EberwineRP">
-      <div>
-        <h1 class="title" id="serverName">EberwineRP</h1>
-        <p class="subtitle small" id="serverSubtitle">Tejiendo hechizos y cargando recursos…</p>
-      </div>
-    </div>
-
-    <details>
-      <summary class="small">Normas rápidas</summary>
-      <ol class="small" style="margin:.5rem 0 .25rem 1.25rem">
-        <li>Rolea consecuencias de tus actos.</li>
-        <li>No abuses de bugs; repórtalos al staff.</li>
-        <li>OOC en /ooc; nunca te salgas rol.</li>
-        <li>Rolea lesiones y evita powergaming.</li>
-        <li>Evita metagaming; cuidado con los /pm.</li>
       </ol>
     </details>
 
     <div class="grid">
-      <div class="card">
-        <div class="label">Jugador</div>
-        <div class="value" id="playerId">SteamID64: </div>
-      </div>
-      <div class="card">
-        <div class="label">Época</div>
-        <div class="value">Actualidad</div>
-      </div>
-      <div class="card">
-        <div class="label">Trama actual</div>
-        <div class="value">Bienvenidos a Hogwarts</div>
-      </div>
-      <div class="card">
-        <div class="label">Copa Ganada</div>
-        <div class="value">—</div>
-      </div>
+      <div class="card"><div class="label">Jugador</div><div class="value" id="playerId">SteamID64: —</div></div>
+      <div class="card"><div class="label">Época</div><div class="value">Actualidad</div></div>
+      <div class="card"><div class="label">Trama actual</div><div class="value">Bienvenidos a Hogwarts</div></div>
+      <div class="card"><div class="label">Copa Ganada</div><div class="value">—</div></div>
     </div>
 
     <div class="bar"><div id="progress"></div></div>
 
     <div class="foot">
-      <div class="tips">
-        <span id="tip">Consejo: consulta /reglas para más detalle.</span>
-      </div>
+      <div class="tips"><span id="tip">Consejo: consulta /reglas para más detalle.</span></div>
       <div class="small" id="hostname">eberwinerp.com</div>
     </div>
 
-    <p class="small" style="opacity:.75;margin-top:10px">
-      ¿Problemas de conexión? Revisa tu caché de Workshop o visita nuestro 
-      <a class="link" href="https://eberwinerp.com/" target="_blank" rel="noopener">Discord</a>.
-    </p>
+    <p class="small" style="opacity:.75;margin-top:10px">¿Problemas de conexión? Revisa tu caché de Workshop o visita nuestro <a class="link" href="https://discord.gg/tuCodigo" target="_blank" rel="noopener">Discord</a>.</p>
   </div>
 
   <script>
-    // Utilidades y datos de URL
+    // Helpers y demo
     const $ = id => document.getElementById(id);
     const qs = new URLSearchParams(location.search);
     if (qs.get('steamid')) $('playerId').textContent = 'SteamID64: ' + qs.get('steamid');
 
-    // Progreso visual demo
-    const bar = $('progress'); let p = 0;
-    (function tick(){ p = Math.min(100, p + (Math.random()*8 + 2)); bar.style.width = p + '%'; if (p < 96) setTimeout(tick, 420); })();
+    // Progreso demo
+    const bar = $('progress'); let p = 0; (function tick(){ p = Math.min(100, p + (Math.random()*8 + 2)); bar.style.width = p + '%'; if (p < 96) setTimeout(tick, 420); })();
 
-    // Tips rotativos demo
+    // Tips demo
     const tips = [
       'Consejo: usa /report para contactar con el staff.',
       'Consejo: rolea lesiones y evita powergaming.',
@@ -206,68 +37,53 @@
     ];
     setInterval(()=>{ $('tip').textContent = tips[Math.floor(Math.random()*tips.length)]; }, 4000);
 
-    // === Partículas: chispas del cursor (azul/dorado/blanco) + estrellas suaves ===
-    const canvas = document.getElementById('magicCursor');
-    const ctx = canvas.getContext('2d');
-    let W, H; function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
-    window.addEventListener('resize', resize); resize();
+    // ===== Destellos globales =====
+    const canvas = $('magicBG'); const ctx = canvas.getContext('2d'); let W,H;
+    function resize(){ W = canvas.width = innerWidth; H = canvas.height = innerHeight; } resize(); addEventListener('resize', resize);
 
-    const palette = [
-      {h:210, s:'100%', l:'70%'}, // azul
-      {h:45,  s:'100%', l:'60%'}, // dorado
-      {h:0,   s:'0%',   l:'100%'} // blanco
-    ];
+    // paleta: azul, dorado, blanco
+    const palette = [ {h:210,s:'100%',l:'70%'}, {h:45,s:'100%',l:'60%'}, {h:0,s:'0%',l:'100%'} ];
 
-    let particles = [], stars = [], mouse = {x:innerWidth/2, y:innerHeight/2};
-    const wand = document.getElementById('wand');
+    // Partículas flotantes (motas) + estrellas y cometas ocasionales
+    let motas = [], estrellas = [], cometas = [];
 
-    // Offsets para alinear la punta con el ratón (coinciden con transform de #wand)
-    const TIP_OFFSET_X = 8;
-    const TIP_OFFSET_Y = -28;
-
-    // Seguir ratón y emitir chispas desde la punta
-    window.addEventListener('mousemove', e => {
-      mouse.x = e.clientX; mouse.y = e.clientY;
-      wand.style.transform = `translate(${e.clientX-6}px, ${e.clientY-38}px) rotate(-35deg)`;
-      for (let i=0;i<4;i++){
-        const c = palette[Math.floor(Math.random()*palette.length)];
-        particles.push({ x:e.clientX+TIP_OFFSET_X, y:e.clientY+TIP_OFFSET_Y, vx:(Math.random()-0.5)*1.6, vy:(Math.random()-0.5)*1.6, life:1, r:Math.random()*1.6+0.5, color:c });
+    function spawnMotas(n){
+      for(let i=0;i<n;i++){
+        const c = palette[Math|Math.random()*palette.length];
+        motas.push({ x:Math.random()*W, y:Math.random()*H, vx:(Math.random()-.5)*0.2, vy:-(.15+Math.random()*0.35), r:Math.random()*1.4+.5, life: .5+Math.random()*1.5, color:c });
       }
-    });
-
-    // Estrellas suaves aleatorias
-    function spawnStar(){
-      const c = palette[Math.floor(Math.random()*palette.length)];
-      stars.push({ x:Math.random()*W, y:Math.random()*H, life:1, r:Math.random()*1.2+0.6, color:c, rot:Math.random()*Math.PI, vr:(Math.random()-0.5)*0.01 });
-      setTimeout(spawnStar, 900 + Math.random()*900);
-    } spawnStar();
-
-    function glow(x,y,r,color,a){
-      const grad = ctx.createRadialGradient(x,y,0, x,y,r*3.5);
-      grad.addColorStop(0, `hsla(${color.h}, ${color.s}, ${color.l}, ${0.85*a})`);
-      grad.addColorStop(1, `rgba(255,255,255,0)`);
-      ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(x,y,r*3.5,0,Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.fillStyle = `hsla(${color.h}, ${color.s}, ${color.l}, ${a})`; ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
     }
-    function star(x,y,r,rot,color,a){
-      ctx.save(); ctx.translate(x,y); ctx.rotate(rot); ctx.globalAlpha = a;
-      ctx.strokeStyle = `hsla(${color.h}, ${color.s}, ${color.l}, 0.9)`; ctx.lineWidth = 1.0;
-      ctx.beginPath(); ctx.moveTo(-r*3,0); ctx.lineTo(r*3,0); ctx.moveTo(0,-r*3); ctx.lineTo(0,r*3); ctx.stroke();
-      const grad = ctx.createRadialGradient(0,0,0, 0,0,r*5); grad.addColorStop(0, `hsla(${color.h}, ${color.s}, ${color.l}, 0.55)`); grad.addColorStop(1, 'rgba(255,255,255,0)');
-      ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(0,0,r*5,0,Math.PI*2); ctx.fill(); ctx.restore();
+    function spawnEstrella(){
+      const c = palette[Math|Math.random()*palette.length];
+      estrellas.push({ x:Math.random()*W, y:Math.random()*H, r:Math.random()*1.2+.6, rot:Math.random()*Math.PI, vr:(Math.random()-.5)*0.01, life:1, color:c });
+      setTimeout(spawnEstrella, 700 + Math.random()*1400);
     }
+    function spawnCometa(){
+      const side = Math.random()<.5 ? 'left' : 'right';
+      const y = Math.random()*H*0.8 + H*0.1; // evitar bordes
+      const speed = 2.2 + Math.random()*1.8;
+      const c = palette[Math|Math.random()*palette.length];
+      cometas.push({ x: side==='left' ? -50 : W+50, y, vx: side==='left'? speed : -speed, vy:(Math.random()-.5)*0.4, len: 80+Math.random()*80, color:c, life:1 });
+      setTimeout(spawnCometa, 4500 + Math.random()*6000);
+    }
+
+    spawnMotas(160); spawnEstrella(); spawnCometa();
+
+    function glow(x,y,r,color,a){ const g=ctx.createRadialGradient(x,y,0,x,y,r*3.2); g.addColorStop(0,`hsla(${color.h},${color.s},${color.l},${0.85*a})`); g.addColorStop(1,'rgba(255,255,255,0)'); ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,r*3.2,0,Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.fillStyle=`hsla(${color.h},${color.s},${color.l},${a})`; ctx.arc(x,y,r,0,Math.PI*2); ctx.fill(); }
+    function crossStar(x,y,r,rot,color,a){ ctx.save(); ctx.translate(x,y); ctx.rotate(rot); ctx.globalAlpha=a; ctx.strokeStyle=`hsla(${color.h},${color.s},${color.l},0.9)`; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(-r*3,0); ctx.lineTo(r*3,0); ctx.moveTo(0,-r*3); ctx.lineTo(0,r*3); ctx.stroke(); const g=ctx.createRadialGradient(0,0,0,0,0,r*5); g.addColorStop(0,`hsla(${color.h},${color.s},${color.l},0.55)`); g.addColorStop(1,'rgba(255,255,255,0)'); ctx.fillStyle=g; ctx.beginPath(); ctx.arc(0,0,r*5,0,Math.PI*2); ctx.fill(); ctx.restore(); }
 
     function loop(){
       ctx.clearRect(0,0,W,H);
-      // Halo en la punta
-      const tipX = mouse.x + TIP_OFFSET_X, tipY = mouse.y + TIP_OFFSET_Y;
-      glow(tipX, tipY, 2.2, {h:45,s:'100%',l:'70%'}, .9);
-      // Partículas
-      for (let i=particles.length-1;i>=0;i--){ const p=particles[i]; p.x+=p.vx; p.y+=p.vy; p.life-=0.03; if(p.life<=0){ particles.splice(i,1); continue; } glow(p.x,p.y,p.r,p.color,p.life); }
-      // Estrellas
-      for (let i=stars.length-1;i>=0;i--){ const s=stars[i]; s.rot+=s.vr; s.life-=0.006; if(s.life<=0){ stars.splice(i,1); continue; } star(s.x,s.y,s.r,s.rot,s.color,s.life*.9); }
+      // motas ascendiendo
+      for(let i=motas.length-1;i>=0;i--){ const p=motas[i]; p.x+=p.vx; p.y+=p.vy; p.life-=0.0025; if(p.y<-10||p.life<=0){ motas[i]={ x:Math.random()*W, y:H+10, vx:(Math.random()-.5)*0.2, vy:-(.15+Math.random()*0.35), r:Math.random()*1.4+.5, life:.5+Math.random()*1.5, color:palette[Math|Math.random()*palette.length] }; continue; } glow(p.x,p.y,p.r,p.color,Math.max(.3,p.life)); }
+      // estrellas
+      for(let i=estrellas.length-1;i>=0;i--){ const s=estrellas[i]; s.rot+=s.vr; s.life-=0.0035; if(s.life<=0){ estrellas.splice(i,1); continue; } crossStar(s.x,s.y,s.r,s.rot,s.color,s.life); }
+      // cometas
+      for(let i=cometas.length-1;i>=0;i--){ const c=cometas[i]; c.x+=c.vx; c.y+=c.vy; c.life-=0.004; if((c.vx>0 && c.x>W+100) || (c.vx<0 && c.x<-100) || c.life<=0){ cometas.splice(i,1); continue; } // rastro
+        const steps = 10; for(let k=0;k<steps;k++){ const t=k/steps; glow(c.x - c.vx*4*t, c.y - c.vy*4*t, (1-t)*1.8+0.4, c.color, (1-t)*0.9); } }
       requestAnimationFrame(loop);
-    } loop();
+    }
+    loop();
   </script>
 </body>
 </html>
