@@ -13,10 +13,14 @@
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
-      margin:0; color:var(--fg); font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Arial;
-      background: radial-gradient(1200px 600px at 20% 20%, rgba(124,58,237,.25), transparent 60%),
-                  radial-gradient(1200px 600px at 80% 80%, rgba(6,182,212,.20), transparent 60%),
-                  linear-gradient(180deg, var(--bg2), var(--bg1));
+      margin:0; 
+      color:var(--fg); 
+      font-family:system-ui;
+      background:
+        url('./assets/bg.jpg') center/cover no-repeat fixed,
+        radial-gradient(1200px 600px at 20% 20%, rgba(124,58,237,.25), transparent 60%),
+        radial-gradient(1200px 600px at 80% 80%, rgba(6,182,212,.20), transparent 60%),
+        linear-gradient(180deg, var(--bg2), var(--bg1));
       overflow:hidden;
     }
     /* animated magic glints overlay */
