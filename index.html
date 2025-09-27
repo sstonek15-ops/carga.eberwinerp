@@ -114,16 +114,16 @@
         <div class="value" id="playerId">SteamID64: —</div>
       </div>
       <div class="card">
-        <div class="label">Mapa</div>
-        <div class="value" id="mapName">—</div>
+        <div class="label">Época</div>
+        <div class="value">Actualidad</div>
       </div>
       <div class="card">
-        <div class="label">Gamemode</div>
-        <div class="value" id="gamemode">—</div>
+        <div class="label">Trama actual</div>
+        <div class="value">Bienvenidos a Hogwarts</div>
       </div>
       <div class="card">
-        <div class="label">Plazas</div>
-        <div class="value" id="slots">—</div>
+        <div class="label">Copa Ganada</div>
+        <div class="value">—</div>
       </div>
     </div>
 
@@ -143,11 +143,13 @@
       <ol class="small" style="margin:.5rem 0 .25rem 1.25rem">
         <li>Rolea consecuencias de tus actos.</li>
         <li>No abuses de bugs; repórtalos al staff.</li>
-        <li>OOC en /ooc; voz para rol.</li>
+        <li>OOC en /ooc; nunca te salgas rol.</li> 
+        <li>Rolea lesiones y evita powergaming.</li>
+        <li>Evita metagaming; cuidado con los /pm.</li>   
       </ol>
     </details>
 
-    <p class="small" style="opacity:.7;margin-top:10px">¿Problemas de conexión? Revisa tu caché de Workshop o visita nuestro <a class="link" href="#" onclick="return false">Discord</a>.</p>
+    <p class="small" style="opacity:.7;margin-top:10px">¿Problemas de conexión? Revisa tu caché de Workshop o visita nuestro <a class="link" href="https://eberwinerp.com/" onclick="return false">Discord</a>.</p>
   </div>
 
   <!-- <audio id="bgm" src="./assets/music.ogg" autoplay loop></audio> -->
@@ -185,10 +187,17 @@
 
     // Tips rotator
     const tips = [
-      'Consejo: usa /report para contactar con el staff.',
-      'Consejo: /reglas para ver normas del servidor.',
-      'Consejo: rolea lesiones y evita powergaming.',
-      'Consejo: haz /discord para unirte a la comunidad.'
+      'Consejo: Consulta al Staff con /help si te atascas.',
+      'Consejo: Usa /me y /do para describir acciones y enriquecer el rol.',
+      'Consejo: Respeta el rol de tu casa y crea historias con otros jugadores.',
+      'Consejo: Asiste a clase para aprender hechizos y adquirir experiencia.',
+      'Consejo: No te quedes sentado esperando un rol, sal a buscarlo y usa los entornos adecuados.',
+      'Consejo: No robes ni mates sin rol previo; evita el powergaming.',
+      'Consejo: Respeta el rol de entorno, a los profesores y adultos.',
+      'Consejo: Las pociones complejas requieren ingredientes raros — coopera o busca para conseguirlos.',
+      'Consejo: Las criaturas mágicas reaccionan a la luz y al ruido. Actúa con cautela.',
+      'Consejo: Rolea consecuencias, los errores también cuentan historias inolvidables.',
+      'Consejo: Consulta las normas en Discord para más información.'
     ];
     setInterval(()=>{
       $('tip').textContent = tips[Math.floor(Math.random()*tips.length)];
