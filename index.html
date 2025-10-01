@@ -92,7 +92,6 @@
     </details>
 
     <div class="grid">
-      <div class="card"><div class="label">Jugador</div><div class="value" id="playerId">SteamID64: —</div></div>
       <div class="card"><div class="label">Época</div><div class="value">Actualidad</div></div>
       <div class="card"><div class="label">Trama actual</div><div class="value">Bienvenidos a Hogwarts</div></div>
       <div class="card"><div class="label">Copa Ganada</div><div class="value">—</div></div>
@@ -119,10 +118,17 @@
 
     // Tips demo
     const tips = [
-      'Consejo: usa /report para contactar con el staff.',
-      'Consejo: rolea lesiones y evita powergaming.',
-      'Consejo: respeta el rol y evita metagaming.',
-      'Consejo: /discord para unirte a la comunidad.'
+      'Consejo: Consulta al Staff con /help si te atascas.',
+      'Consejo: Usa /me y /do para describir acciones y enriquecer el rol.',
+      'Consejo: Respeta el rol de tu casa y crea historias con otros jugadores.',
+      'Consejo: Asiste a clase para aprender hechizos y adquirir experiencia.',
+      'Consejo: No te quedes sentado esperando un rol, sal a buscarlo y usa los entornos adecuados.',
+      'Consejo: No robes ni mates sin rol previo; evita el powergaming.',
+      'Consejo: Respeta el rol de entorno, a los profesores y adultos.',
+      'Consejo: Las pociones complejas requieren ingredientes raros — coopera o busca para conseguirlos.',
+      'Consejo: Las criaturas mágicas reaccionan a la luz y al ruido. Actúa con cautela.',
+      'Consejo: Rolea consecuencias, los errores también cuentan historias inolvidables.',
+      'Consejo: Consulta las normas en Discord para más información.'
     ];
     setInterval(()=>{ $('tip').textContent = tips[Math.floor(Math.random()*tips.length)]; }, 4000);
 
