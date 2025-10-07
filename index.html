@@ -63,7 +63,24 @@
 
     details{ margin-top:16px }
     summary{ cursor:pointer }
+
+    .qr-scan {
+      width: 110px;          /* 100–120 px ideal para escanear */
+      height: 110px;
+      margin-top: 6px;
+      border-radius: 6px;
+      image-rendering: crisp-edges;
+      box-shadow: 0 0 12px rgba(255,255,255,0.1),
+                  0 0 4px rgba(31,182,255,0.3);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .qr-scan:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 18px rgba(31,182,255,0.5);
+    }
+
   </style> 
+
 </head>
 <body>
   <!-- Canvas de destellos globales -->
