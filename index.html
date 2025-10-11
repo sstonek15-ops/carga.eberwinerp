@@ -126,9 +126,53 @@
       box-shadow: 0 0 18px rgba(31,182,255,0.5);
     }
 
+        /* El panel principal y el header deben ser relativos */
+    .wrap { position: relative; }
+    .top  { position: relative; }
+    
+    /* Deja hueco a la derecha para que el QR no pise el título */
+    .title-wrap { padding-right: 150px; } /* ajusta si hace falta */
+    
+    /* Badge anclado en la esquina */
+    .qr-badge{
+      position:absolute; top:14px; right:14px;
+      width:128px; height:128px;           /* ajusta tamaño */
+      display:flex; align-items:center; justify-content:center;
+      border-radius:14px;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.18);
+      backdrop-filter: blur(6px);
+      box-shadow:0 8px 26px rgba(0,0,0,.35), inset 0 0 24px rgba(31,182,255,.08);
+      text-decoration:none; z-index:5;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+    .qr-badge:hover{ transform:translateY(-1px); box-shadow:0 12px 32px rgba(0,0,0,.45), 0 0 18px rgba(31,182,255,.35); }
+    
+    .qr-badge img{
+      width:96px; height:96px;              /* mínimo ~90–100 px para escanear */
+      image-rendering: crisp-edges;
+      border-radius:8px;
+      box-shadow: 0 0 0 1px rgba(255,255,255,.35);
+    }
+    
+    /* Responsive */
+    @media (max-width: 900px){
+      .qr-badge{ width:104px; height:104px; }
+      .qr-badge img{ width:80px; height:80px; }
+      .title-wrap{ padding-right:120px; }
+    }
+    @media (max-width: 560px){
+      .qr-badge{ display:none; } /* quítalo si quieres que siempre se vea */
+    }
+
   </style> 
 
 </head>
+    <!-- QR fijo en la esquina superior derecha del panel -->
+  <a class="qr-badge" href="https://discord.gg/tuCodigo" target="_blank" rel="noopener" aria-label="Discord">
+    <img src="./assets/discord_qr.png" alt="QR Discord">
+  </a>
+</div>
 <body>
   <!-- Canvas de destellos globales -->
   <canvas id="magicBG"></canvas>
