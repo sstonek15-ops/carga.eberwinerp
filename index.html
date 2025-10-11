@@ -4,60 +4,15 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
   <title>EberwineRP — Conectando… (Destellos globales)</title>
+
   <style>
     :root{
-      --bg1:#0b1020; --bg2:#131a33; /* fondo oscuro mágico */
-      --fg:#f8fafc; --muted:#cbd5e1; --gold:#d4af37; --accent1:#1fb6ff; --accent2:#60a5fa;
+      --bg1:#0b1020; --bg2:#131a33;
+      --fg:#f8fafc; --muted:#cbd5e1; --gold:#d4af37;
+      --accent1:#1fb6ff; --accent2:#60a5fa;
     }
     *{box-sizing:border-box}
-    
     html,body{height:100%}
-
-      /* Asegura que el panel padre sea el referente del posicionamiento */
-      .wrap { position: relative; }
-      
-      /* Deja hueco a la derecha del título para que no lo pise el QR */
-      .top { position: relative; }
-      .title-wrap { padding-right: 150px; } /* ajusta según tamaño del QR */
-      
-      /* El QR anclado a la esquina superior derecha del panel */
-      .qr-card{
-        position: absolute;
-        top: 14px;                 /* distancia al borde superior del panel */
-        right: 14px;               /* distancia al borde derecho del panel */
-        width: 128px;              /* tamaño total del “sobre” */
-        height: 128px;
-        display: flex; align-items: center; justify-content: center;
-        border-radius: 14px;
-        background: rgba(255,255,255,.06);
-        border: 1px solid rgba(255,255,255,.18);
-        backdrop-filter: blur(6px);
-        box-shadow: 0 8px 26px rgba(0,0,0,.35), inset 0 0 24px rgba(31,182,255,.08);
-        text-decoration: none;
-        z-index: 5;                /* por encima del contenido del header */
-        transition: transform .15s ease, box-shadow .15s ease;
-      }
-      .qr-card:hover{
-        transform: translateY(-1px);
-        box-shadow: 0 12px 32px rgba(0,0,0,.45), 0 0 18px rgba(31,182,255,.35);
-      }
-      
-      /* La imagen interna (tu sobre con QR) */
-      .qr-card img{
-        max-width: 100%;
-        max-height: 100%;
-        image-rendering: crisp-edges; /* deja el QR nítido */
-        border-radius: 10px;
-      }
-      
-      /* Responsive: reduce o esconde si la pantalla es estrecha */
-      @media (max-width: 900px){
-        .qr-card{ width: 104px; height: 104px; }
-        .title-wrap{ padding-right: 120px; }
-      }
-      @media (max-width: 560px){
-        .qr-card{ display:none; } /* quítalo si quieres que siempre se vea */
-      }
 
     body{
       display:flex; justify-content:center; align-items:center; margin:0; color:var(--fg);
@@ -68,7 +23,6 @@
         radial-gradient(1200px 600px at 80% 80%, rgba(212,175,55,.12), transparent 60%),
         linear-gradient(180deg, var(--bg2), var(--bg1));
       overflow:hidden; min-height:100vh;
-      /* mantenemos cursor normal al omitir varita */
       cursor:auto;
     }
 
@@ -89,11 +43,36 @@
     }
     .wrap::after{ content:""; position:absolute; inset:8px; border-radius:20px; pointer-events:none; box-shadow: 0 12px 28px rgba(0,0,0,.35) inset, 0 -8px 18px rgba(0,0,0,.25) inset }
 
-    .top{ display:flex; align-items:center; gap:16px }
+    /* Header */
+    .top{ position:relative; display:flex; align-items:center; gap:16px }
     .logo{ width:68px; height:68px; border-radius:16px; object-fit:cover; border:1px solid rgba(255,255,255,.18); box-shadow: 0 6px 18px rgba(31,182,255,.35), 0 0 0 6px rgba(31,182,255,.10) }
     .title{ margin:0; font-weight:900; font-size:2.6rem; letter-spacing:.3px }
     .subtitle{ margin:.25rem 0 0; color:var(--muted) }
 
+    /* deja hueco a la derecha para el QR */
+    .title-wrap{ padding-right:150px; }
+
+    /* QR anclado en la esquina superior derecha del header */
+    .qr-badge{
+      position:absolute; top:14px; right:14px;
+      width:128px; height:128px;
+      display:flex; align-items:center; justify-content:center;
+      border-radius:14px;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.18);
+      backdrop-filter: blur(6px);
+      box-shadow:0 8px 26px rgba(0,0,0,.35), inset 0 0 24px rgba(31,182,255,.08);
+      text-decoration:none; z-index:5;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+    .qr-badge:hover{ transform:translateY(-1px); box-shadow:0 12px 32px rgba(0,0,0,.45), 0 0 18px rgba(31,182,255,.35); }
+    .qr-badge img{
+      width:96px; height:96px;
+      image-rendering: crisp-edges; border-radius:8px;
+      box-shadow: 0 0 0 1px rgba(255,255,255,.35);
+    }
+
+    /* Cards, barras, etc. */
     .grid{ display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:14px; margin-top:18px }
     .card{ background: rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08); border-radius:14px; padding:12px 14px; min-height:68px }
     .label{ font-size:12px; text-transform:uppercase; letter-spacing:.12em; color:#9aa6b2 }
@@ -111,68 +90,27 @@
     details{ margin-top:16px }
     summary{ cursor:pointer }
 
-    .qr-scan {
-      width: 110px;          /* 100–120 px ideal para escanear */
-      height: 110px;
-      margin-top: 6px;
-      border-radius: 6px;
-      image-rendering: crisp-edges;
-      box-shadow: 0 0 12px rgba(255,255,255,0.1),
-                  0 0 4px rgba(31,182,255,0.3);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    /* QR pequeño escaneable (debajo de “Discord”) */
+    .qr-scan{
+      width:110px; height:110px; margin-top:6px;
+      border-radius:6px; image-rendering:crisp-edges;
+      box-shadow:0 0 12px rgba(255,255,255,.1), 0 0 4px rgba(31,182,255,.3);
+      transition:transform .2s ease, box-shadow .2s ease;
     }
-    .qr-scan:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 18px rgba(31,182,255,0.5);
-    }
+    .qr-scan:hover{ transform:scale(1.05); box-shadow:0 0 18px rgba(31,182,255,.5); }
 
-        /* El panel principal y el header deben ser relativos */
-    .wrap { position: relative; }
-    .top  { position: relative; }
-    
-    /* Deja hueco a la derecha para que el QR no pise el título */
-    .title-wrap { padding-right: 150px; } /* ajusta si hace falta */
-    
-    /* Badge anclado en la esquina */
-    .qr-badge{
-      position:absolute; top:14px; right:14px;
-      width:128px; height:128px;           /* ajusta tamaño */
-      display:flex; align-items:center; justify-content:center;
-      border-radius:14px;
-      background:rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.18);
-      backdrop-filter: blur(6px);
-      box-shadow:0 8px 26px rgba(0,0,0,.35), inset 0 0 24px rgba(31,182,255,.08);
-      text-decoration:none; z-index:5;
-      transition: transform .15s ease, box-shadow .15s ease;
-    }
-    .qr-badge:hover{ transform:translateY(-1px); box-shadow:0 12px 32px rgba(0,0,0,.45), 0 0 18px rgba(31,182,255,.35); }
-    
-    .qr-badge img{
-      width:96px; height:96px;              /* mínimo ~90–100 px para escanear */
-      image-rendering: crisp-edges;
-      border-radius:8px;
-      box-shadow: 0 0 0 1px rgba(255,255,255,.35);
-    }
-    
     /* Responsive */
-    @media (max-width: 900px){
+    @media (max-width:900px){
       .qr-badge{ width:104px; height:104px; }
       .qr-badge img{ width:80px; height:80px; }
       .title-wrap{ padding-right:120px; }
     }
-    @media (max-width: 560px){
-      .qr-badge{ display:none; } /* quítalo si quieres que siempre se vea */
+    @media (max-width:560px){
+      .qr-badge{ display:none; }
     }
-
-  </style> 
-
+  </style>
 </head>
-    <!-- QR fijo en la esquina superior derecha del panel -->
-  <a class="qr-badge" href="https://discord.gg/tuCodigo" target="_blank" rel="noopener" aria-label="Discord">
-    <img src="./assets/discord_qr.png" alt="QR Discord">
-  </a>
-</div>
+
 <body>
   <!-- Canvas de destellos globales -->
   <canvas id="magicBG"></canvas>
@@ -181,13 +119,20 @@
   <div class="wrap" role="main" aria-label="Pantalla de carga EberwineRP">
     <div class="top">
       <img class="logo" src="./assets/logo.png" alt="Logo EberwineRP">
-      <div>
+
+      <!-- IMPORTANTE: ahora sí usamos title-wrap -->
+      <div class="title-wrap">
         <h1 class="title" id="serverName">EberwineRP</h1>
         <p class="subtitle small" id="serverSubtitle">Tejiendo hechizos y cargando recursos…</p>
       </div>
+
+      <!-- QR fijo en la esquina superior derecha del header -->
+      <a class="qr-badge" href="https://discord.gg/tuCodigo" target="_blank" rel="noopener" aria-label="Discord">
+        <img src="./assets/discord_qr.png" alt="QR Discord">
+      </a>
     </div>
 
-    <!-- Normas rápidas desplegadas -->
+    <!-- Normas rápidas -->
     <details open>
       <summary class="small">Normas rápidas</summary>
       <ol class="small" style="margin:.5rem 0 .25rem 1.25rem">
@@ -208,18 +153,20 @@
 
     <div class="bar"><div id="progress"></div></div>
 
-              <div class="foot">
-        <div class="tips"><span id="tip">Consulta /consejos para más detalle.</span></div>
-        <div class="small" id="hostname">eberwinerp.com</div>
-      </div>
-  
+    <div class="foot">
+      <div class="tips"><span id="tip">Consulta /consejos para más detalle.</span></div>
+      <div class="small" id="hostname">eberwinerp.com</div>
+    </div>
+
+    <!-- Texto de ayuda con el QR debajo de “Discord” -->
     <p class="small" style="opacity:.75;margin-top:10px">
       ¿Problemas de conexión? Revisa tu caché de Workshop o visita nuestro
-      <a class="link" href="" target="_blank" rel="noopener">Discord</a>
-      <a href="https://discord.gg/tuCodigo" target="_blank" rel="noopener">
-       <img src="./assets/eberqr.png" alt="QR Discord" class="qr-scan">
-      </a>
+      <span style="display:inline-flex;flex-direction:column;align-items:center;gap:6px;margin-left:6px">
+        <a class="link" href="https://discord.gg/tuCodigo" target="_blank" rel="noopener">Discord</a>
+        <img src="./assets/eberqr.png" alt="QR Discord" class="qr-scan">
+      </span>
     </p>
+  </div>
 
   <script>
     // Helpers y demo
@@ -228,7 +175,8 @@
     if (qs.get('steamid')) $('playerId').textContent = 'SteamID64: ' + qs.get('steamid');
 
     // Progreso demo
-    const bar = $('progress'); let p = 0; (function tick(){ p = Math.min(100, p + (Math.random()*8 + 2)); bar.style.width = p + '%'; if (p < 96) setTimeout(tick, 420); })();
+    const bar = $('progress'); let p = 0;
+    (function tick(){ p = Math.min(100, p + (Math.random()*8 + 2)); bar.style.width = p + '%'; if (p < 96) setTimeout(tick, 420); })();
 
     // Tips demo
     const tips = [
@@ -236,63 +184,19 @@
       'Consejo: Usa /me y /do para describir acciones y enriquecer el rol.',
       'Consejo: Respeta el rol de tu casa y crea historias con otros jugadores.',
       'Consejo: Asiste a clase para aprender hechizos y adquirir experiencia.',
-      'Consejo: No te quedes sentado esperando un rol, sal a buscarlo y usa los entornos adecuados.',
       'Consejo: No robes ni mates sin rol previo; evita el powergaming.',
       'Consejo: Respeta el rol de entorno, a los profesores y adultos.',
-      'Consejo: Las pociones complejas requieren ingredientes raros — coopera o busca para conseguirlos.',
-      'Consejo: Las criaturas mágicas reaccionan a la luz y al ruido. Actúa con cautela.',
-      'Consejo: Rolea consecuencias, los errores también cuentan historias inolvidables.',
-      'Consejo: Consulta las normas en Discord para más información.'
+      'Consejo: Rolea consecuencias; los errores también cuentan historias.'
     ];
     setInterval(()=>{ $('tip').textContent = tips[Math.floor(Math.random()*tips.length)]; }, 4000);
 
-    // ===== Destellos globales =====
+    // Destellos globales (igual que antes)
     const canvas = $('magicBG'); const ctx = canvas.getContext('2d'); let W,H;
     function resize(){ W = canvas.width = innerWidth; H = canvas.height = innerHeight; } resize(); addEventListener('resize', resize);
-
-    // paleta: azul, dorado, blanco
     const palette = [ {h:210,s:'100%',l:'70%'}, {h:45,s:'100%',l:'60%'}, {h:0,s:'0%',l:'100%'} ];
-
-    // Partículas flotantes (motas) + estrellas y cometas ocasionales
-    let motas = [], estrellas = [], cometas = [];
-
-    function spawnMotas(n){
-      for(let i=0;i<n;i++){
-        const c = palette[Math|Math.random()*palette.length];
-        motas.push({ x:Math.random()*W, y:Math.random()*H, vx:(Math.random()-.5)*0.2, vy:-(.15+Math.random()*0.35), r:Math.random()*1.4+.5, life: .5+Math.random()*1.5, color:c });
-      }
-    }
-    function spawnEstrella(){
-      const c = palette[Math|Math.random()*palette.length];
-      estrellas.push({ x:Math.random()*W, y:Math.random()*H, r:Math.random()*1.2+.6, rot:Math.random()*Math.PI, vr:(Math.random()-.5)*0.01, life:1, color:c });
-      setTimeout(spawnEstrella, 700 + Math.random()*1400);
-    }
-    function spawnCometa(){
-      const side = Math.random()<.5 ? 'left' : 'right';
-      const y = Math.random()*H*0.8 + H*0.1; // evitar bordes
-      const speed = 2.2 + Math.random()*1.8;
-      const c = palette[Math|Math.random()*palette.length];
-      cometas.push({ x: side==='left' ? -50 : W+50, y, vx: side==='left'? speed : -speed, vy:(Math.random()-.5)*0.4, len: 80+Math.random()*80, color:c, life:1 });
-      setTimeout(spawnCometa, 4500 + Math.random()*6000);
-    }
-
-    spawnMotas(160); spawnEstrella(); spawnCometa();
-
+    let motas = []; for(let i=0;i<160;i++){ motas.push({ x:Math.random()*W, y:Math.random()*H, vx:(Math.random()-.5)*0.2, vy:-(.15+Math.random()*0.35), r:Math.random()*1.4+.5, life:.5+Math.random()*1.5, color:palette[Math|Math.random()*palette.length] }); }
     function glow(x,y,r,color,a){ const g=ctx.createRadialGradient(x,y,0,x,y,r*3.2); g.addColorStop(0,`hsla(${color.h},${color.s},${color.l},${0.85*a})`); g.addColorStop(1,'rgba(255,255,255,0)'); ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,r*3.2,0,Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.fillStyle=`hsla(${color.h},${color.s},${color.l},${a})`; ctx.arc(x,y,r,0,Math.PI*2); ctx.fill(); }
-    function crossStar(x,y,r,rot,color,a){ ctx.save(); ctx.translate(x,y); ctx.rotate(rot); ctx.globalAlpha=a; ctx.strokeStyle=`hsla(${color.h},${color.s},${color.l},0.9)`; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(-r*3,0); ctx.lineTo(r*3,0); ctx.moveTo(0,-r*3); ctx.lineTo(0,r*3); ctx.stroke(); const g=ctx.createRadialGradient(0,0,0,0,0,r*5); g.addColorStop(0,`hsla(${color.h},${color.s},${color.l},0.55)`); g.addColorStop(1,'rgba(255,255,255,0)'); ctx.fillStyle=g; ctx.beginPath(); ctx.arc(0,0,r*5,0,Math.PI*2); ctx.fill(); ctx.restore(); }
-
-    function loop(){
-      ctx.clearRect(0,0,W,H);
-      // motas ascendiendo
-      for(let i=motas.length-1;i>=0;i--){ const p=motas[i]; p.x+=p.vx; p.y+=p.vy; p.life-=0.0025; if(p.y<-10||p.life<=0){ motas[i]={ x:Math.random()*W, y:H+10, vx:(Math.random()-.5)*0.2, vy:-(.15+Math.random()*0.35), r:Math.random()*1.4+.5, life:.5+Math.random()*1.5, color:palette[Math|Math.random()*palette.length] }; continue; } glow(p.x,p.y,p.r,p.color,Math.max(.3,p.life)); }
-      // estrellas
-      for(let i=estrellas.length-1;i>=0;i--){ const s=estrellas[i]; s.rot+=s.vr; s.life-=0.0035; if(s.life<=0){ estrellas.splice(i,1); continue; } crossStar(s.x,s.y,s.r,s.rot,s.color,s.life); }
-      // cometas
-      for(let i=cometas.length-1;i>=0;i--){ const c=cometas[i]; c.x+=c.vx; c.y+=c.vy; c.life-=0.004; if((c.vx>0 && c.x>W+100) || (c.vx<0 && c.x<-100) || c.life<=0){ cometas.splice(i,1); continue; } // rastro
-        const steps = 10; for(let k=0;k<steps;k++){ const t=k/steps; glow(c.x - c.vx*4*t, c.y - c.vy*4*t, (1-t)*1.8+0.4, c.color, (1-t)*0.9); } }
-      requestAnimationFrame(loop);
-    }
-    loop();
+    function loop(){ ctx.clearRect(0,0,W,H); for(let i=motas.length-1;i>=0;i--){ const p=motas[i]; p.x+=p.vx; p.y+=p.vy; p.life-=0.0025; if(p.y<-10||p.life<=0){ motas[i]={ x:Math.random()*W, y:H+10, vx:(Math.random()-.5)*0.2, vy:-(.15+Math.random()*0.35), r:Math.random()*1.4+.5, life:.5+Math.random()*1.5, color:palette[Math|Math.random()*palette.length] }; continue; } glow(p.x,p.y,p.r,p.color,Math.max(.3,p.life)); } requestAnimationFrame(loop); } loop();
   </script>
 </body>
 </html>
