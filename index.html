@@ -12,6 +12,52 @@
     *{box-sizing:border-box}
     html,body{height:100%}
 
+    /* Asegura que el panel padre sea el referente del posicionamiento */
+.wrap { position: relative; }
+
+/* Deja hueco a la derecha del título para que no lo pise el QR */
+.top { position: relative; }
+.title-wrap { padding-right: 150px; } /* ajusta según tamaño del QR */
+
+/* El QR anclado a la esquina superior derecha del panel */
+.qr-card{
+  position: absolute;
+  top: 14px;                 /* distancia al borde superior del panel */
+  right: 14px;               /* distancia al borde derecho del panel */
+  width: 128px;              /* tamaño total del “sobre” */
+  height: 128px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 14px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.18);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 8px 26px rgba(0,0,0,.35), inset 0 0 24px rgba(31,182,255,.08);
+  text-decoration: none;
+  z-index: 5;                /* por encima del contenido del header */
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.qr-card:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 12px 32px rgba(0,0,0,.45), 0 0 18px rgba(31,182,255,.35);
+}
+
+/* La imagen interna (tu sobre con QR) */
+.qr-card img{
+  max-width: 100%;
+  max-height: 100%;
+  image-rendering: crisp-edges; /* deja el QR nítido */
+  border-radius: 10px;
+}
+
+/* Responsive: reduce o esconde si la pantalla es estrecha */
+@media (max-width: 900px){
+  .qr-card{ width: 104px; height: 104px; }
+  .title-wrap{ padding-right: 120px; }
+}
+@media (max-width: 560px){
+  .qr-card{ display:none; } /* quítalo si quieres que siempre se vea */
+}
+
     body{
       display:flex; justify-content:center; align-items:center; margin:0; color:var(--fg);
       font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Arial;
