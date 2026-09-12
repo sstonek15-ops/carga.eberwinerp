@@ -2,140 +2,154 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-  <title>EberwineRP — Conectando… (Destellos globales)</title>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover" />
+  <title>EberwineRP — Conectando…</title>
   <style>
     :root{
       --bg1:#0b1020; --bg2:#131a33;
-      --fg:#f8fafc; --muted:#cbd5e1; --gold:#d4af37;
-      --accent1:#1fb6ff; --accent2:#60a5fa;
+      --fg:#f8fafc; --muted:#cbd5e1; --muted2:#8f9aab;
+      --gold:#d4af37; --cyan:#1fb6ff; --blue:#60a5fa;
+      --panel:rgba(8,13,25,.66); --card:rgba(255,255,255,.055);
+      --stroke:rgba(255,255,255,.12);
     }
     *{box-sizing:border-box}
     html,body{height:100%}
-
     body{
-      display:flex; justify-content:center; align-items:center; margin:0; color:var(--fg);
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Arial;
+      margin:0; min-height:100vh; min-height:100svh;
+      display:flex; justify-content:center; align-items:center;
+      padding:28px; color:var(--fg);
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
       background:
         url('./assets/bg.jpg') center/cover no-repeat fixed,
         radial-gradient(1200px 600px at 20% 20%, rgba(31,182,255,.18), transparent 60%),
         radial-gradient(1200px 600px at 80% 80%, rgba(212,175,55,.12), transparent 60%),
         linear-gradient(180deg, var(--bg2), var(--bg1));
-      overflow:hidden; min-height:100vh;
-      cursor:auto;
+      overflow:hidden;
     }
+    #magicBG{position:fixed;inset:0;pointer-events:none;z-index:1;filter:blur(.1px)}
 
-    /* Canvas de destellos de fondo */
-    #magicBG{ position:fixed; inset:0; pointer-events:none; z-index:1; filter:blur(.15px) }
-
-    /* UI principal */
     .wrap{
-      position:relative; z-index:2; width:min(1200px,95vw);
-      background: rgba(10,14,28,.55);
-      border-radius: 22px; padding: 44px 36px; backdrop-filter: blur(8px);
-      box-shadow: 0 18px 60px rgba(0,0,0,.45), inset 0 0 40px rgba(97,218,251,.06);
+      position:relative; z-index:2;
+      width:min(1180px,95vw);
+      padding:34px 34px 28px;
+      border-radius:24px;
+      background:rgba(10,14,28,.55);
+      border:1px solid rgba(255,255,255,.12);
+      backdrop-filter:blur(8px);
+      -webkit-backdrop-filter:blur(8px);
+      box-shadow:0 18px 60px rgba(0,0,0,.45), inset 0 0 40px rgba(97,218,251,.06);
+      overflow:hidden;
     }
     .wrap::before{ content:""; position:absolute; inset:0; border-radius:22px; pointer-events:none; padding:2px;
       background: linear-gradient(135deg, rgba(255,255,255,.75), rgba(255,255,255,.15) 18%, rgba(31,182,255,.7) 36%, rgba(96,165,250,.8) 48%, rgba(212,175,55,.85) 70%, rgba(255,255,255,.65) 100%);
       -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
       -webkit-mask-composite:xor; mask-composite:exclude; box-shadow: 0 0 20px rgba(31,182,255,.35), 0 0 28px rgba(212,175,55,.25);
     }
-    .wrap::after{ content:""; position:absolute; inset:8px; border-radius:20px; pointer-events:none; box-shadow: 0 12px 28px rgba(0,0,0,.35) inset, 0 -8px 18px rgba(0,0,0,.25) inset }
+    .wrap::after{content:"";position:absolute;inset:8px;border-radius:20px;pointer-events:none;box-shadow:0 12px 28px rgba(0,0,0,.35) inset,0 -8px 18px rgba(0,0,0,.25) inset}
 
-    /* Header */
-    .top{ position:relative; display:flex; align-items:center; gap:16px }
-    .logo{ width:68px; height:68px; border-radius:16px; object-fit:cover; border:1px solid rgba(255,255,255,.18); box-shadow: 0 6px 18px rgba(31,182,255,.35), 0 0 0 6px rgba(31,182,255,.10) }
-    .title{ margin:0; font-weight:900; font-size:2.6rem; letter-spacing:.3px }
-    .subtitle{ margin:.25rem 0 0; color:var(--muted) }
+    .top{position:relative;display:flex;align-items:center;gap:18px;min-height:106px}
+    .logo{
+      width:74px;height:74px;flex:0 0 74px;border-radius:18px;object-fit:cover;
+      border:1px solid rgba(255,255,255,.16);
+      box-shadow:0 10px 28px rgba(0,0,0,.34),0 0 0 6px rgba(102,216,255,.055),0 0 26px rgba(102,216,255,.18);
+    }
+    .title-wrap{padding-right:150px;min-width:0}
+    .eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:rgba(216,183,90,.88);margin-bottom:5px}
+    .title{margin:0;font-weight:820;font-size:clamp(2rem,4vw,2.7rem);letter-spacing:.2px;line-height:1.02;text-shadow:0 5px 22px rgba(0,0,0,.42)}
+    .subtitle{margin:.45rem 0 0;color:var(--muted);font-size:13px}
 
-    /* deja hueco a la derecha para el QR */
-    .title-wrap{ padding-right:150px; }
-
-    /* QR anclado en la esquina superior derecha del header */
     .qr-badge{
-      position:absolute; top:14px; right:14px;
-      width:128px; height:128px;
-      display:flex; align-items:center; justify-content:center;
-      border-radius:14px;
-      background:rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.18);
-      backdrop-filter: blur(6px);
-      box-shadow:0 8px 26px rgba(0,0,0,.35), inset 0 0 24px rgba(31,182,255,.08);
-      text-decoration:none; z-index:5;
-      transition: transform .15s ease, box-shadow .15s ease;
+      position:absolute;top:0;right:0;width:116px;height:116px;
+      display:flex;align-items:center;justify-content:center;border-radius:18px;
+      background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.035));
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow:0 14px 34px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.06);
+      text-decoration:none;z-index:5;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;
     }
-    .qr-badge:hover{ transform:translateY(-1px); box-shadow:0 12px 32px rgba(0,0,0,.45), 0 0 18px rgba(31,182,255,.35); }
-    .qr-badge img{
-      width:96px; height:96px;
-      image-rendering: crisp-edges; border-radius:8px;
-      box-shadow: 0 0 0 1px rgba(255,255,255,.35);
+    .qr-badge:hover{transform:translateY(-2px);border-color:rgba(102,216,255,.34);box-shadow:0 18px 40px rgba(0,0,0,.42),0 0 24px rgba(102,216,255,.12)}
+    .qr-badge img{width:86px;height:86px;border-radius:9px;image-rendering:crisp-edges;box-shadow:0 0 0 1px rgba(255,255,255,.22)}
+
+    details{
+      position:relative;margin-top:16px;border-top:1px solid rgba(255,255,255,.075);
+      border-bottom:1px solid rgba(255,255,255,.075);padding:13px 0 11px;
     }
+    summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;color:#d6deea;font-size:12px;font-weight:650;letter-spacing:.03em}
+    summary::-webkit-details-marker{display:none}
+    summary::before{content:"✦";color:var(--gold);font-size:10px;filter:drop-shadow(0 0 6px rgba(216,183,90,.45))}
+    summary::after{content:"⌄";margin-left:auto;color:var(--muted2);font-size:14px;transition:transform .2s ease}
+    details[open] summary::after{transform:rotate(180deg)}
+    details ol{margin:.7rem 0 .2rem 1.35rem!important;padding:0;color:#aeb8c8;columns:2;column-gap:36px}
+    details li{break-inside:avoid;margin:.23rem 0;line-height:1.45}
 
-    /* Cards, barras, etc. */
-    .grid{ display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:14px; margin-top:18px }
-    .card{ background: rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08); border-radius:14px; padding:12px 14px; min-height:68px }
-    .label{ font-size:12px; text-transform:uppercase; letter-spacing:.12em; color:#9aa6b2 }
-    .value{ margin-top:6px; font-weight:600; font-size:1.2rem; text-shadow: 0 2px 14px rgba(31,182,255,.25) }
-
-    .bar{ margin-top:18px; height:14px; border-radius:999px; background:rgba(255,255,255,.08); overflow:hidden; border:1px solid rgba(255,255,255,.07) }
-    .bar>div{ height:100%; width:0%; background:linear-gradient(90deg, var(--accent1), var(--gold)); box-shadow:0 0 20px rgba(31,182,255,.5); transition:width .35s ease }
-
-    .foot{ display:flex; justify-content:space-between; align-items:center; margin-top:14px; gap:10px }
-    .small{ font-size:12px; color:#9aa6b2 }
-    .tips{ font-size:13px; color:#e2e8f0 }
-    .link{ color:#a5f3fc; text-decoration:none; border-bottom:1px dashed rgba(165,243,252,.6); }
-    .link:hover{ opacity:.85 }
-
-    details{ margin-top:16px }
-    summary{ cursor:pointer }
-
-    /* QR pequeño escaneable (debajo de “Discord”) */
-    .qr-scan{
-      width:110px; height:110px; margin-top:6px;
-      border-radius:6px; image-rendering:crisp-edges;
-      box-shadow:0 0 12px rgba(255,255,255,.1), 0 0 4px rgba(31,182,255,.3);
-      transition:transform .2s ease, box-shadow .2s ease;
+    .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:17px}
+    .card{
+      position:relative;overflow:hidden;min-height:78px;padding:13px 14px;border-radius:15px;
+      background:linear-gradient(180deg,rgba(255,255,255,.061),rgba(255,255,255,.035));
+      border:1px solid rgba(255,255,255,.085);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.025);
+      transition:transform .18s ease,border-color .18s ease,background .18s ease;
     }
-    .qr-scan:hover{ transform:scale(1.05); box-shadow:0 0 18px rgba(31,182,255,.5); }
+    .card::after{content:"";position:absolute;left:14px;right:55%;bottom:0;height:1px;background:linear-gradient(90deg,rgba(102,216,255,.65),transparent)}
+    .card:nth-child(2)::after,.card:nth-child(4)::after{background:linear-gradient(90deg,rgba(216,183,90,.72),transparent)}
+    .card:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.15);background:rgba(255,255,255,.07)}
+    .label{font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:#8996a8}
+    .value{margin-top:8px;font-weight:650;font-size:1.05rem;line-height:1.25;color:#edf3fb;text-shadow:0 2px 15px rgba(0,0,0,.38)}
 
-    /* Responsive */
-    @media (max-width:900px){
-      .qr-badge{ width:104px; height:104px; }
-      .qr-badge img{ width:80px; height:80px; }
-      .title-wrap{ padding-right:120px; }
+    .progress-row{display:flex;justify-content:space-between;gap:16px;align-items:end;margin-top:20px;margin-bottom:8px}
+    .progress-label{font-size:11px;text-transform:uppercase;letter-spacing:.13em;color:#909cae}
+    .progress-status{font-size:12px;color:#c9d3df;white-space:nowrap;max-width:62%;overflow:hidden;text-overflow:ellipsis}
+    .bar{height:10px;border-radius:999px;background:rgba(255,255,255,.075);overflow:hidden;border:1px solid rgba(255,255,255,.065);box-shadow:inset 0 1px 3px rgba(0,0,0,.35)}
+    .bar>div{position:relative;height:100%;width:0%;border-radius:inherit;background:linear-gradient(90deg,#4e9eff 0%,#63d8ff 52%,#d8b75a 100%);box-shadow:0 0 17px rgba(102,216,255,.34);transition:width .28s ease}
+    .bar>div::after{content:"";position:absolute;top:0;bottom:0;width:42px;right:-10px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.8),transparent);filter:blur(3px);animation:glint 1.7s ease-in-out infinite}
+    @keyframes glint{0%,100%{opacity:.18;transform:translateX(-12px)}50%{opacity:.85;transform:translateX(12px)}}
+
+    .foot{display:flex;justify-content:space-between;align-items:center;margin-top:13px;gap:16px}
+    .tips{font-size:12px;color:#d9e2ed;min-height:18px;transition:opacity .18s ease}
+    .hostname{font-size:11px;color:#8390a2;white-space:nowrap;letter-spacing:.04em}
+    .help{opacity:.68;margin:9px 0 0;font-size:11px;color:#98a4b5}
+    .small{font-size:12px;color:#9aa6b2}
+
+    @media(max-width:900px){
+      body{padding:20px}
+      .wrap{width:min(760px,96vw);padding:28px 26px 24px}
+      .grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+      .qr-badge{width:104px;height:104px}.qr-badge img{width:78px;height:78px}
+      .title-wrap{padding-right:125px}
     }
-    @media (max-width:560px){
-      .qr-badge{ display:none; }
+    @media(max-width:620px){
+      body{align-items:flex-start;padding:16px;overflow:auto;background-attachment:scroll}
+      .wrap{margin:auto 0;width:100%;padding:22px 18px 20px;border-radius:20px}
+      .top{min-height:auto;align-items:flex-start}.logo{width:58px;height:58px;flex-basis:58px;border-radius:15px}
+      .title-wrap{padding-right:0}.title{font-size:1.85rem}.subtitle{font-size:12px;line-height:1.35}
+      .eyebrow{font-size:9px}.qr-badge{display:none}
+      details ol{columns:1}
+      .grid{grid-template-columns:1fr 1fr;gap:9px}.card{min-height:72px;padding:12px}.value{font-size:.93rem}
+      .progress-row{align-items:flex-start}.progress-status{max-width:58%;text-align:right}
+      .foot{align-items:flex-start}.tips{line-height:1.35}.hostname{display:none}
     }
+    @media(max-width:420px){.grid{grid-template-columns:1fr}.card{min-height:66px}.progress-status{max-width:55%}}
+    @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
   </style>
 </head>
-
 <body>
-  <!-- Canvas de destellos globales -->
   <canvas id="magicBG"></canvas>
 
-  <!-- UI principal -->
   <div class="wrap" role="main" aria-label="Pantalla de carga EberwineRP">
     <div class="top">
       <img class="logo" src="./assets/logo.png" alt="Logo EberwineRP">
-
-      <!-- IMPORTANTE: ahora sí usamos title-wrap -->
       <div class="title-wrap">
+        <div class="eyebrow">Servidor de rol mágico</div>
         <h1 class="title" id="serverName">EberwineRP</h1>
-        <p class="subtitle small" id="serverSubtitle">Tejiendo hechizos y cargando recursos…</p>
+        <p class="subtitle" id="serverSubtitle">Tejiendo hechizos y cargando recursos…</p>
       </div>
-
-      <!-- QR fijo en la esquina superior derecha del header -->
-        <a class="qr-badge" href="https://discord.gg/tuCodigo" target="_blank" rel="noopener" aria-label="Discord">
+      <a class="qr-badge" href="https://discord.gg/tuCodigo" target="_blank" rel="noopener" aria-label="Discord de EberwineRP">
         <img src="./assets/eberqr.png" alt="QR Discord">
       </a>
     </div>
 
-    <!-- Normas rápidas -->
     <details open>
-      <summary class="small">Normas rápidas</summary>
-      <ol class="small" style="margin:.5rem 0 .25rem 1.25rem">
+      <summary>Normas rápidas</summary>
+      <ol class="small">
         <li>Rolea consecuencias de tus actos.</li>
         <li>No abuses de bugs; repórtalos al staff.</li>
         <li>OOC en /ooc; nunca te salgas rol.</li>
@@ -146,54 +160,121 @@
 
     <div class="grid">
       <div class="card"><div class="label">Época</div><div class="value">Actualidad</div></div>
-      <div class="card"><div class="label">Trama actual</div><div class="value">Bienvenidos a Hogwarts</div></div>
-      <div class="card"><div class="label">Copa Clases</div><div class="value">—</div></div>
-      <div class="card"><div class="label">Copa Pruebas</div><div class="value">—</div></div>
+      <div class="card"><div class="label">Universo</div><div class="value">Hogwarts + lore original de Eberwine</div></div>
+      <div class="card"><div class="label">Sistemas</div><div class="value">Mecánicas únicas y progresión propia</div></div>
+      <div class="card"><div class="label">Experiencia</div><div class="value">Clases, eventos, exploración y secretos</div></div>
     </div>
 
+    <div class="progress-row">
+      <div class="progress-label">Cargando recursos</div>
+      <div class="progress-status" id="progressStatus">Preparando el mundo mágico…</div>
+    </div>
     <div class="bar"><div id="progress"></div></div>
 
     <div class="foot">
       <div class="tips"><span id="tip">Consulta con /help al Staff si necesitas ayuda.</span></div>
-      <div class="small" id="hostname">eberwinerp.com</div>
+      <div class="hostname" id="hostname">eberwinerp.com</div>
     </div>
 
-    <!-- Texto de ayuda con el QR debajo de “Discord” -->
-    <p class="small" style="opacity:.75;margin-top:10px">
-      ¿Problemas de conexión? Revisa tu caché de Workshop o abre ticket.
-      <span style="display:inline-flex;flex-direction:column;align-items:center;gap:6px;margin-left:6px">
-      </span>
-    </p>
+    <p class="help">¿Problemas de conexión? Revisa tu caché de Workshop o abre ticket.</p>
+    <span id="playerId" hidden></span>
   </div>
 
-  <script>
-    // Helpers y demo
-    const $ = id => document.getElementById(id);
-    const qs = new URLSearchParams(location.search);
-    if (qs.get('steamid')) $('playerId').textContent = 'SteamID64: ' + qs.get('steamid');
+<script>
+  const $ = id => document.getElementById(id);
+  const qs = new URLSearchParams(location.search);
+  const steamid = qs.get('steamid');
+  if (steamid) $('playerId').textContent = 'SteamID64: ' + steamid;
 
-    // Progreso demo
-    const bar = $('progress'); let p = 0;
-    (function tick(){ p = Math.min(100, p + (Math.random()*8 + 2)); bar.style.width = p + '%'; if (p < 96) setTimeout(tick, 420); })();
+  const bar = $('progress');
+  const statusEl = $('progressStatus');
+  let progressValue = 0;
+  let demoTimer = null;
+  let receivedRealProgress = false;
 
-    // Tips demo
-    const tips = [
-      'Consejo: Usa /me y /do para describir acciones y enriquecer el rol.',
-      'Consejo: Respeta el rol de tu casa y crea historias con otros jugadores.',
-      'Consejo: Asiste a clase para aprender hechizos y adquirir experiencia.',
-      'Consejo: No robes ni mates sin rol previo; evita el powergaming.',
-      'Consejo: Respeta el rol de entorno, a los profesores y adultos.',
-      'Consejo: Rolea consecuencias; los errores también cuentan historias.'
-    ];
-    setInterval(()=>{ $('tip').textContent = tips[Math.floor(Math.random()*tips.length)]; }, 4000);
+  function setProgress(value, status){
+    progressValue = Math.max(0, Math.min(100, Number(value) || 0));
+    bar.style.width = progressValue + '%';
+    if (status) statusEl.textContent = status;
+  }
 
-    // Destellos globales (igual que antes)
-    const canvas = $('magicBG'); const ctx = canvas.getContext('2d'); let W,H;
-    function resize(){ W = canvas.width = innerWidth; H = canvas.height = innerHeight; } resize(); addEventListener('resize', resize);
-    const palette = [ {h:210,s:'100%',l:'70%'}, {h:45,s:'100%',l:'60%'}, {h:0,s:'0%',l:'100%'} ];
-    let motas = []; for(let i=0;i<160;i++){ motas.push({ x:Math.random()*W, y:Math.random()*H, vx:(Math.random()-.5)*0.2, vy:-(.15+Math.random()*0.35), r:Math.random()*1.4+.5, life:.5+Math.random()*1.5, color:palette[Math|Math.random()*palette.length] }); }
-    function glow(x,y,r,color,a){ const g=ctx.createRadialGradient(x,y,0,x,y,r*3.2); g.addColorStop(0,`hsla(${color.h},${color.s},${color.l},${0.85*a})`); g.addColorStop(1,'rgba(255,255,255,0)'); ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,r*3.2,0,Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.fillStyle=`hsla(${color.h},${color.s},${color.l},${a})`; ctx.arc(x,y,r,0,Math.PI*2); ctx.fill(); }
-    function loop(){ ctx.clearRect(0,0,W,H); for(let i=motas.length-1;i>=0;i--){ const p=motas[i]; p.x+=p.vx; p.y+=p.vy; p.life-=0.0025; if(p.y<-10||p.life<=0){ motas[i]={ x:Math.random()*W, y:H+10, vx:(Math.random()-.5)*0.2, vy:-(.15+Math.random()*0.35), r:Math.random()*1.4+.5, life:.5+Math.random()*1.5, color:palette[Math|Math.random()*palette.length] }; continue; } glow(p.x,p.y,p.r,p.color,Math.max(.3,p.life)); } requestAnimationFrame(loop); } loop();
-  </script>
+  function startDemo(){
+    function tick(){
+      if (receivedRealProgress) return;
+      const gain = Math.random() * 4.2 + 1.1;
+      setProgress(Math.min(96, progressValue + gain), 'Preparando recursos del servidor…');
+      if (progressValue < 96) demoTimer = setTimeout(tick, 520);
+    }
+    tick();
+  }
+  startDemo();
+
+  window.SetFilesTotal = function(total){ window.__filesTotal = Number(total) || 0; };
+  window.SetFilesNeeded = function(needed){
+    receivedRealProgress = true;
+    clearTimeout(demoTimer);
+    const total = window.__filesTotal || 0;
+    if (total > 0) setProgress(((total - Number(needed)) / total) * 100, 'Descargando contenido del servidor…');
+  };
+  window.DownloadingFile = function(fileName){
+    receivedRealProgress = true;
+    clearTimeout(demoTimer);
+    statusEl.textContent = fileName ? ('Descargando · ' + fileName) : 'Descargando contenido…';
+  };
+  window.SetStatusChanged = function(status){
+    receivedRealProgress = true;
+    clearTimeout(demoTimer);
+    if (status) statusEl.textContent = status;
+  };
+  window.GameDetails = function(servername, serverurl, mapname, maxplayers, steamid64, gamemode){
+    if (servername) $('serverName').textContent = servername;
+    if (serverurl) $('hostname').textContent = serverurl.replace(/^https?:\/\//,'').replace(/\/$/,'');
+  };
+
+  const tips = [
+    'Consejo: Usa /me y /do para describir acciones y enriquecer el rol.',
+    'Consejo: Respeta el rol de tu casa y crea historias con otros jugadores.',
+    'Consejo: Asiste a clase para aprender hechizos y adquirir experiencia.',
+    'Consejo: No robes ni mates sin rol previo; evita el powergaming.',
+    'Consejo: Respeta el rol de entorno, a los profesores y adultos.',
+    'Consejo: Rolea consecuencias; los errores también cuentan historias.'
+  ];
+  let tipIndex = 0;
+  setInterval(()=>{
+    const tip = $('tip');
+    tip.style.opacity = '0';
+    setTimeout(()=>{ tipIndex = (tipIndex + 1) % tips.length; tip.textContent = tips[tipIndex]; tip.style.opacity = '1'; },180);
+  },4500);
+
+  // Partículas: recuperamos deliberadamente la tonalidad, densidad e intensidad de la versión original.
+  const canvas = $('magicBG'); const ctx = canvas.getContext('2d'); let W,H;
+  function resize(){ W = canvas.width = innerWidth; H = canvas.height = innerHeight; }
+  resize(); addEventListener('resize', resize);
+  const palette = [ {h:210,s:'100%',l:'70%'}, {h:45,s:'100%',l:'60%'}, {h:0,s:'0%',l:'100%'} ];
+  let motas = [];
+  for(let i=0;i<160;i++){
+    motas.push({ x:Math.random()*W, y:Math.random()*H, vx:(Math.random()-.5)*0.2, vy:-(.15+Math.random()*0.35), r:Math.random()*1.4+.5, life:.5+Math.random()*1.5, color:palette[Math.floor(Math.random()*palette.length)] });
+  }
+  function glow(x,y,r,color,a){
+    const g=ctx.createRadialGradient(x,y,0,x,y,r*3.2);
+    g.addColorStop(0,`hsla(${color.h},${color.s},${color.l},${0.85*a})`);
+    g.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,r*3.2,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.fillStyle=`hsla(${color.h},${color.s},${color.l},${a})`; ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
+  }
+  function loop(){
+    ctx.clearRect(0,0,W,H);
+    for(let i=motas.length-1;i>=0;i--){
+      const p=motas[i]; p.x+=p.vx; p.y+=p.vy; p.life-=0.0025;
+      if(p.y<-10||p.life<=0){
+        motas[i]={ x:Math.random()*W, y:H+10, vx:(Math.random()-.5)*0.2, vy:-(.15+Math.random()*0.35), r:Math.random()*1.4+.5, life:.5+Math.random()*1.5, color:palette[Math.floor(Math.random()*palette.length)] };
+        continue;
+      }
+      glow(p.x,p.y,p.r,p.color,Math.max(.3,p.life));
+    }
+    requestAnimationFrame(loop);
+  }
+  loop();
+</script>
 </body>
 </html>
