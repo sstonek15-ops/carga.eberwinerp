@@ -173,7 +173,7 @@
 
     <div class="foot">
       <div class="tips"><span id="tip">Consulta con /help al Staff si necesitas ayuda.</span></div>
-      <div class="hostname" id="hostname">eberwinerp.com</div>
+      <div class="hostname" id="hostname">EberwineRP</div>
     </div>
 
     <p class="help">¿Problemas de conexión? Revisa tu caché de Workshop o abre ticket.</p>
@@ -228,7 +228,6 @@
   };
   window.GameDetails = function(servername, serverurl, mapname, maxplayers, steamid64, gamemode){
     if (servername) $('serverName').textContent = servername;
-    if (serverurl) $('hostname').textContent = serverurl.replace(/^https?:\/\//,'').replace(/\/$/,'');
   };
 
   const tips = [
